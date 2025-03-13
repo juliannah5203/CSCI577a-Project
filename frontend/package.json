@@ -12,9 +12,10 @@
     "react-scripts": "4.0.3"
   },
   "scripts": {
-    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
-    "build": "react-scripts build",
-    "lint": "react-scripts lint"
+  "start": "react-scripts start",
+  "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
