@@ -10,19 +10,24 @@ const UserProfile = () => {
     sex: '',
     profilePicture: '',
   });
+
+  const [originalProfile, setOriginalProfile] = useState(null);
   const [editing, setEditing] = useState(false);
 
+  // Fetch user profile
   useEffect(() => {
     axios.get('/api/users/profile', { withCredentials: true })
       .then(res => {
         const data = res.data;
-        setProfile({
+        const newProfile = {
           name: data.name || '',
           email: data.email || '',
           region: data.region || '',
           sex: data.sex || '',
           profilePicture: data.profilePicture || '',
-        });
+        };
+        setProfile(newProfile);
+        setOriginalProfile(newProfile);
       })
       .catch(err => console.error('Failed to fetch profile:', err));
   }, []);
@@ -31,11 +36,25 @@ const UserProfile = () => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
+  const handleEditToggle = () => {
+    if (!editing) setOriginalProfile(profile); // Save current state before editing
+    else setProfile(originalProfile); // Revert on cancel
+    setEditing(!editing);
+  };
+
   const handleSave = () => {
     const { name, region, sex } = profile;
+
     axios.put('/api/users/profile', { name, region, sex }, { withCredentials: true })
-      .then(() => setEditing(false))
-      .catch(err => console.error('Update failed:', err));
+      .then(() => {
+        setEditing(false);
+      })
+      .catch(err => {
+        console.error('Update failed:', err);
+        alert('Failed to save profile. Reverting changes.');
+        setProfile(originalProfile);
+        setEditing(false);
+      });
   };
 
   return (
@@ -45,7 +64,7 @@ const UserProfile = () => {
         <div style={{ flex: 1 }}>
           <h2>{profile.name}</h2>
         </div>
-        <button onClick={() => setEditing(!editing)} style={styles.editBtn}>
+        <button onClick={handleEditToggle} style={styles.editBtn}>
           {editing ? 'Cancel' : 'Edit'}
         </button>
       </div>
@@ -56,7 +75,7 @@ const UserProfile = () => {
 
       <div style={styles.infoRow}><strong>Email:</strong> {profile.email}</div>
 
-      <div style={styles.infoRow}><strong>Gender:</strong>
+      <div style={styles.infoRow}><strong>Sex:</strong>
         {editing ? (
           <select name="sex" value={profile.sex} onChange={handleChange} style={styles.input}>
             <option value="">Select</option>
@@ -86,7 +105,7 @@ const styles = {
     borderRadius: '16px',
     boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
     maxWidth: '600px',
-    margin: '0 auto',
+    margin: '2rem auto',
   },
   avatarRow: {
     display: 'flex',
