@@ -2,18 +2,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { AppBar, Tabs, Tab, Box, Typography } from '@mui/material';
+import UserProfile from './UserProfile';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
-    <div 
-      role="tabpanel" 
-      hidden={value !== index} 
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} {...other}>
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -28,27 +25,26 @@ TabPanel.propTypes = {
 
 const Dashboard = () => {
   const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  const handleChange = (event, newValue) => setValue(newValue);
 
   return (
     <div>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ backgroundColor: '#e6f4df', color: 'black' }}>
         <Tabs value={value} onChange={handleChange} aria-label="dashboard tabs">
-          <Tab label="Tab One" />
-          <Tab label="Tab Two" />
-          <Tab label="Tab Three" />
+          <Tab label="Home" />
+          <Tab label="Check-Ins" />
+          <Tab label="Profile" />
         </Tabs>
       </AppBar>
+
       <TabPanel value={value} index={0}>
-        Content for Tab One
+        <Typography>Welcome to MindCare!</Typography>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Content for Tab Two
+        <Typography>Check-in tab (coming soon)</Typography>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Content for Tab Three
+        <UserProfile />
       </TabPanel>
     </div>
   );
