@@ -56,7 +56,7 @@ const UserProfile = () => {
 
       <div style={styles.infoRow}><strong>Email:</strong> {profile.email}</div>
 
-      <div style={styles.infoRow}><strong>Sex:</strong>
+      <div style={styles.infoRow}><strong>Gender:</strong>
         {editing ? (
           <select name="sex" value={profile.sex} onChange={handleChange} style={styles.input}>
             <option value="">Select</option>
