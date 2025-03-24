@@ -28,6 +28,7 @@ jobs:
       - name: Run Lint
         run: |
           cd frontend
+          npm install
           npm run lint
 
   backend-lint:
