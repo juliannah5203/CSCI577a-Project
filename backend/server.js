@@ -5,6 +5,8 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const cors = require('cors');
 const mongoose = require('mongoose');
+const authController = require('./controllers/authController');
+const authConfig = require('./config/auth');
 require('dotenv').config();
 
 const app = express();
@@ -14,12 +16,8 @@ app.use(express.json());
 // Allow cross-origin requests from the React frontend (assumed to run on http://localhost:3000)
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-// Express session middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-session-secret',
-  resave: false,
-  saveUninitialized: false
-}));
+// Express session middleware using config settings
+app.use(session(authConfig.session));
 
 // Initialize Passport middleware
 app.use(passport.initialize());
@@ -38,13 +36,17 @@ mongoose.connect(process.env.MONGO_URI)
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: authConfig.googleAuth.callbackURL
   },
-  (accessToken, refreshToken, profile, done) => {
-    // TODO: Find or create a user in your MongoDB here
-    // For this demo, we simply pass the profile object
-    
-    return done(null, profile);
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Find or create user in database
+      const user = await authController.findOrCreateGoogleUser(profile);
+      return done(null, { id: user.google_id, userId: user._id });
+    } catch (err) {
+      console.error("Error in Google authentication strategy:", err);
+      return done(err, null);
+    }
   }
 ));
 
@@ -58,7 +60,7 @@ passport.deserializeUser((obj, done) => {
 
 // Route to start the Google OAuth flow
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', { scope: authConfig.googleAuth.scopes })
 );
 
 // OAuth callback URL
@@ -66,7 +68,10 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login-failure', session: true }),
   (req, res) => {
     // Successful authentication, redirect to the React dashboard.
-    res.redirect('http://localhost:3000/dashboard');
+    const clientBaseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://your-production-url.com' 
+      : 'http://localhost:3000';
+    res.redirect(`${clientBaseUrl}/dashboard`);
   }
 );
 

@@ -5,10 +5,18 @@ const settingController = require('../controllers/settingController');
 const answerController = require('../controllers/answerController');
 const suggestionController = require('../controllers/suggestionController');
 const questionnaireController = require('../controllers/questionnaireController');
+const authController = require('../controllers/authController');
+const { isAuthenticated } = require('../middlewares/authMiddleware');
 
 router.get("", async (req, res) => {res.status(200).json("Hello World!")})
 router.get("/api", async (req, res) => {res.status(200).json("Hello World!")})
 
+// User profile routes for Google OAuth
+router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
+router.post('/api/users/logout', isAuthenticated, authController.logout);
+
+// Existing user CRUD routes
 router.post('/api/users', userController.createUser);
 router.get('/api/users', userController.getAllUsers);
 router.get('/api/users/:id', userController.getUserById);
