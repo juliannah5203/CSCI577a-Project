@@ -76,7 +76,7 @@ app.get('/auth/google/callback',
 );
 
 // Logout route
-app.get('/auth/logout', (req, res) => {
+app.get('/auth/logout', (req, res,next) => {
   req.logout(err => {
     if (err) { return next(err); }
     res.redirect('http://localhost:3000/');
