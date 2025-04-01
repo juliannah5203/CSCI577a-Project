@@ -9,6 +9,8 @@ require('dotenv').config();
 
 const app = express();
 
+app.use(express.json());
+
 // Allow cross-origin requests from the React frontend (assumed to run on http://localhost:3000)
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
@@ -23,8 +25,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// router
+const Api = require('./routes/Api');
+app.use('', Api);
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
@@ -37,6 +43,7 @@ passport.use(new GoogleStrategy({
   (accessToken, refreshToken, profile, done) => {
     // TODO: Find or create a user in your MongoDB here
     // For this demo, we simply pass the profile object
+    
     return done(null, profile);
   }
 ));
@@ -81,10 +88,12 @@ app.get('/login-failure', (req, res) => {
   res.send('Failed to authenticate.');
 });
 
-// Start the server
-const PORT = process.env.PORT || 5001;
 // A simple test endpoint
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running' });
 });
+
+// Start the server
+const PORT = process.env.PORT || 5001;
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
