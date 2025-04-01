@@ -13,7 +13,7 @@ router.get("/api", async (req, res) => {res.status(200).json("Hello World!")})
 
 // User profile routes for Google OAuth
 router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
-router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
+// router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
 router.post('/api/users/logout', isAuthenticated, authController.logout);
 
 // Existing user CRUD routes
