@@ -27,13 +27,13 @@ exports.createSafeUserResponse = (user) => {
 
 // Validates that all required fields are present in a profile update
 exports.validateProfileUpdate = (body) => {
-  const { name, diseases, gender, time_zone } = body;
+  const { name, region, sex } = body;
   const errors = {};
-  
-  // Optional validations
-  if (diseases && !['general', 'depression', 'anxiety'].includes(diseases)) {
-    errors.diseases = 'Disease type must be one of: general, depression, anxiety';
-  }
+  if (!name) errors.name = 'Name is required';
+  if (!region) errors.region = 'Region is required';
+  if (!sex) errors.sex = 'Sex is required';
+
+  // Add any validation rules for the frontend fields
   
   if (Object.keys(errors).length > 0) {
     return { valid: false, errors };
