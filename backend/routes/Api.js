@@ -42,7 +42,8 @@ router.get("/api", async (req, res) => { res.status(200).json("Hello World!"); }
  *       401:
  *         description: "Unauthorized access."
  */
-router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+// router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+router.get('/api/users/profile', authController.getUserProfile);
 
 /**
  * @swagger
@@ -55,7 +56,7 @@ router.get('/api/users/profile', isAuthenticated, authController.getUserProfile)
  *       401:
  *         description: "Unauthorized access."
  */
-router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);  
+router.put('/api/users/profile', authController.updateUserProfile);  
 
 
 /**
