@@ -46,6 +46,20 @@ router.get('/api/users/profile', isAuthenticated, authController.getUserProfile)
 
 /**
  * @swagger
+ * /api/users/profile:
+ *   put:
+ *     description: "Updates the user profile for authenticated user."
+ *     responses:
+ *       200:
+ *         description: "User profile updated successfully."
+ *       401:
+ *         description: "Unauthorized access."
+ */
+router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);  
+
+
+/**
+ * @swagger
  * /api/users/logout:
  *   post:
  *     description: "Logs out the user."

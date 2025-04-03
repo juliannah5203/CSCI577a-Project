@@ -24,45 +24,42 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-// Update user profile 
-// redundant
-// TODO: remove this
-// exports.updateUserProfile = async (req, res) => {
-//   try {
-//     if (!req.user || !req.user.id) {
-//       return res.status(401).json({ error: 'Not authenticated' });
-//     }
+exports.updateUserProfile = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
 
-//     // Validate profile update data
-//     const validation = authUtils.validateProfileUpdate(req.body);
-//     if (!validation.valid) {
-//       return res.status(400).json({ error: 'Invalid profile data', details: validation.errors });
-//     }
+    // Validate profile update data
+    const validation = authUtils.validateProfileUpdate(req.body);
+    if (!validation.valid) {
+      return res.status(400).json({ error: 'Invalid profile data', details: validation.errors });
+    }
 
-//     const { name, diseases, gender, time_zone } = req.body;
+    // Map frontend field names to database field names
+    const { name, region, sex } = req.body;
     
-//     // Find user by Google ID
-//     let user = await User.findOne({ google_id: req.user.id });
+    // Find user by Google ID
+    let user = await User.findOne({ google_id: req.user.id });
     
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-//     // Update user data
-//     if (name) user.username = name;
-//     if (diseases) user.diseases = diseases;
-//     if (gender) user.gender = gender;
-//     if (time_zone) user.time_zone = time_zone;
+    // Update user data
+    if (name) user.username = name;
+    if (sex) user.gender = sex;
+    if (region) user.time_zone = region;
 
-//     await user.save();
+    await user.save();
 
-//     // Return updated user profile using safe response utility
-//     res.json(authUtils.createSafeUserResponse(user));
-//   } catch (err) {
-//     console.error('Error updating user profile:', err);
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// };
+    // Return updated user profile using safe response utility
+    res.json(authUtils.createSafeUserResponse(user));
+  } catch (err) {
+    console.error('Error updating user profile:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 // Find or create user from Google profile
 exports.findOrCreateGoogleUser = async (profile) => {
