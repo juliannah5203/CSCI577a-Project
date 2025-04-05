@@ -19,6 +19,7 @@
 // App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import SignInPage from './components/SignInPage';
 import Dashboard from './components/Dashboard';
 import UserProfile from './components/UserProfile';
 import AIInsights from './components/AIInsights';
@@ -30,6 +31,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<SignInPage />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/userprofile" element={<UserProfile />} />
         <Route path="/checkin" element={<CheckIn />} />

@@ -79,8 +79,8 @@ const HeaderSection = () => {
         sx={{
           position: 'absolute',
           top: 0,
-          left: -24,
-          width: 'calc(100vw + 48px)',
+          left: -35,
+          width: 'calc(100vw)',
           height: '100%',
           backgroundColor: 'rgba(255, 255, 255, 0.4)',
           borderRadius: 3,

@@ -82,8 +82,8 @@ const HeaderSection = () => {
         sx={{
           position: 'absolute',
           top: 0,
-          left: -24,
-          width: 'calc(100vw + 48px)',
+          left: -35,
+          width: 'calc(100vw)',
           height: '100%',
           backgroundColor: 'rgba(255, 255, 255, 0.4)',
           borderRadius: 3,
@@ -156,7 +156,7 @@ const CheckInHistory = () => {
           sx={{
             backgroundColor: '#e6f4df',
             minHeight: '100vh',
-            pt: 0,
+            // pt: 0,
             px: 3,
             pb: 3,
             position: 'relative',
