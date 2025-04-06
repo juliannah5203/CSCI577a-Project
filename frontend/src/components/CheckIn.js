@@ -149,9 +149,9 @@ const HeaderSection = () => {
   );
 };
 
-  
 
-const AIInsights = () => {
+// CheckIn Component that uses HeaderSection
+const CheckIn = () => {
   return (
      <Box
           sx={{
@@ -164,12 +164,12 @@ const AIInsights = () => {
           }}
         >
           <HeaderSection />
-      {''}
+      {/* Additional content for the CheckIn page */}
       <Typography variant="h5" align="center">
-        This is the AIInsights page.
+        This is the CheckIn page.
       </Typography>
     </Box>
   );
 };
 
-export default AIInsights;
+export default CheckIn;
