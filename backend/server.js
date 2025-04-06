@@ -5,26 +5,60 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const cors = require('cors');
 const mongoose = require('mongoose');
+const authController = require('./controllers/authController');
+const authConfig = require('./config/auth');
 require('dotenv').config();
 
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const app = express();
+
+// app.use(express.static('dist'))
+
+// swagger
+// http://localhost:5001/api-docs/
+
+const options = {
+  definition: {
+      openapi: '3.0.0',
+      info: {
+          title: 'API',
+          version: '1.0.0'
+      }
+  },
+  apis: ['./routes/*.js']
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+// 可以访问 xxx/swagger.json 看到生成的swaggerJSDoc
+app.get('/swagger.json', function (req, res) {
+  res.setHeader('Content-Type', 'application/json')
+  res.send(swaggerSpec)
+})
+
+app.use(express.json());
 
 // Allow cross-origin requests from the React frontend (assumed to run on http://localhost:3000)
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-// Express session middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-session-secret',
-  resave: false,
-  saveUninitialized: false
-}));
-
+// Temp Disable Auth
+// Express session middleware using config settings
+app.use(session(authConfig.session));
 // Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
+// router
+const Api = require('./routes/Api');
+app.use('', Api);
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
@@ -32,12 +66,17 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: authConfig.googleAuth.callbackURL
   },
-  (accessToken, refreshToken, profile, done) => {
-    // TODO: Find or create a user in your MongoDB here
-    // For this demo, we simply pass the profile object
-    return done(null, profile);
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Find or create user in database
+      const user = await authController.findOrCreateGoogleUser(profile);
+      return done(null, { id: user.google_id, userId: user._id });
+    } catch (err) {
+      console.error("Error in Google authentication strategy:", err);
+      return done(err, null);
+    }
   }
 ));
 
@@ -51,7 +90,7 @@ passport.deserializeUser((obj, done) => {
 
 // Route to start the Google OAuth flow
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', { scope: authConfig.googleAuth.scopes })
 );
 
 // OAuth callback URL
@@ -59,12 +98,15 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login-failure', session: true }),
   (req, res) => {
     // Successful authentication, redirect to the React dashboard.
-    res.redirect('http://localhost:3000/dashboard');
+    const clientBaseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://your-production-url.com' 
+      : 'http://localhost:3000';
+    res.redirect(`${clientBaseUrl}/dashboard`);
   }
 );
 
 // Logout route
-app.get('/auth/logout', (req, res) => {
+app.get('/auth/logout', (req, res,next) => {
   req.logout(err => {
     if (err) { return next(err); }
     res.redirect('http://localhost:3000/');
@@ -81,10 +123,21 @@ app.get('/login-failure', (req, res) => {
   res.send('Failed to authenticate.');
 });
 
-// Start the server
-const PORT = process.env.PORT || 5001;
 // A simple test endpoint
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running' });
 });
+
+
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+// Start the server
+const PORT = process.env.PORT || 5001;
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

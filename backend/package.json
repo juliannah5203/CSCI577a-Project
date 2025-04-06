@@ -5,23 +5,32 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon server.js",
-        "lint": "eslint . --ext .js"
+        "lint": "eslint . --ext .js",
+        "hstart": "node --watch server.js",
+        "build:ui": "rm -rf dist && cd ../frontend/ && npm run build && cp -r dist ../backend",
+        "deploy": "",
+        "deploy:full": "npm run build:ui && npm run deploy",
+        "test": "jest"
     },
     "dependencies": {
+        "@google-cloud/firestore": "^7.11.0",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
         "express": "^4.17.1",
         "express-session": "^1.17.1",
-        "firebase-admin": "^11.0.0",
-        "mongoose": "^5.12.3",
-        "passport": "^0.4.1",
-        "passport-google-oauth20": "^2.0.0"
+        "firebase-admin": "^13.2.0",
+        "google-gax": "^4.4.1",
+        "mongoose": "^8.13.0",
+        "passport": "^0.7.0",
+        "passport-google-oauth20": "^2.0.0",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.22.0",
-        "eslint": "^9.22.0",
+        "eslint": "^9.23.0",
         "eslint-plugin-react": "^7.37.4",
         "globals": "^16.0.0",
-        "typescript-eslint": "^8.26.1"
+        "jest": "^29.7.0"
     }
 }
