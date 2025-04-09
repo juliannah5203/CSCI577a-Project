@@ -31,6 +31,9 @@ function App() {
         <Route path="/mood" element={<MoodTrends />} />
         <Route path="/history" element={<CheckInHistory />} />
         <Route path="/settings" element={<Settings />} />
+        
+        {/* Place holder route for protected routes. Delete this later*/}
+        <Route path="/placeHolderRoute" element={<ProtectedRoute></ProtectedRoute>} /> 
       </Routes>
     </Router>
   );
