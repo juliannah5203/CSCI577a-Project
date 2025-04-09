@@ -7,6 +7,9 @@ const suggestionController = require('../controllers/suggestionController');
 const questionnaireController = require('../controllers/questionnaireController');
 const authController = require('../controllers/authController');
 const { isAuthenticated } = require('../middlewares/authMiddleware');
+// added
+const moodTrendController = require('../controllers/moodTrendController');
+const cacheMiddleware = require('../middleware/cacheMiddleware');
 
 
 /**
