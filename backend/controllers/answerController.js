@@ -7,7 +7,7 @@ exports.createAnswer = async (req, res) => {
     const answer = new Answer(req.body);
     await answer.save();
 
-    // Clear user's cached mood trend data when a new answer is added
+    // Addde: Clear user's cached mood trend data when a new answer is added
     moodTrendCache.clearUserCache(answer.user_id);
     
     res.status(201).json(answer);
@@ -36,7 +36,7 @@ exports.updateAnswer = async (req, res) => {
     });
     if (!answer) return res.status(404).json({ error: 'Answer not found' });
 
-    // Clear user's cached mood trend data when an answer is updated
+    // Addedd: Clear user's cached mood trend data when an answer is updated
     moodTrendCache.clearUserCache(answer.user_id);
     
     res.json(answer);
@@ -54,7 +54,7 @@ exports.deleteAnswer = async (req, res) => {
     const userId = answer.user_id; // added
     await Answer.findByIdAndDelete(req.params.id); // added
 
-    // Clear user's cached mood trend data when an answer is deleted
+    // Aadded: Clear user's cached mood trend data when an answer is deleted
     moodTrendCache.clearUserCache(userId);
     
     res.json({ message: 'Answer deleted' });
