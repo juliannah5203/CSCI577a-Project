@@ -53,8 +53,8 @@ const populateTest = async () => {
     const answer = new Answer({
       user_id: user._id,
       questionnaire_id: questionnaire._id,
-      answers: ['Not great', 'Yes'],
-      notes: 'Feeling stressed'
+      moodRating: 3,
+      note: 'Feeling stressed'
     });
     await answer.save();
     console.log('Answer created:', answer._id);

@@ -213,7 +213,7 @@ router.delete('/api/settings/:userId', settingController.deleteSetting);
 
 /**
  * @swagger
- * /api/answers:
+ * /api/checkins:
  *   post:
  *     description: "Creates a new answer."
  *     responses:
@@ -222,11 +222,11 @@ router.delete('/api/settings/:userId', settingController.deleteSetting);
  *       400:
  *         description: "Invalid answer data."
  */
-router.post('/api/answers', answerController.createAnswer);
+router.post('/api/checkins', answerController.createAnswer);
 
 /**
  * @swagger
- * /api/answers/{userId}:
+ * /api/checkins/{userId}:
  *   get:
  *     description: "Fetches answers by user ID."
  *     parameters:
@@ -238,7 +238,24 @@ router.post('/api/answers', answerController.createAnswer);
  *       200:
  *         description: "Returns the answers by user."
  */
-router.get('/api/answers/:userId', answerController.getAnswersByUserId);
+router.get('/api/checkins/:userId', answerController.getAnswersByUserId);
+
+/**
+ * @swagger
+ * /api/checkins/{Id}:
+ *   get:
+ *     description: "Fetches answers by ID."
+ *     parameters:
+ *       - name: Id
+ *         in: path
+ *         required: true
+ *         description: "Answer's unique identifier."
+ *     responses:
+ *       200:
+ *         description: "Returns the answers by id."
+ */
+router.get('/api/checkins/:ansId', answerController.getAnswersById);
+
 
 /**
  * @swagger

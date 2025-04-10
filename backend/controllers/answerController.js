@@ -9,12 +9,37 @@ exports.createAnswer = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+
+  // update last checkin time
+  try {
+      const setting = await Setting.findOneAndUpdate(
+        { user_id: req.params.userId },
+        { $set: { last_checkin_day: Date.now } },
+        { new: true, runValidators: true }
+      );
+      if (!setting) return res.status(404).json({ error: 'Setting not found' });
+      res.json(setting);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+
 };
 
 // 获取用户的答案（填充问卷信息）
 exports.getAnswersByUserId = async (req, res) => {
   try {
     const answers = await Answer.find({ user_id: req.params.userId })
+      .populate('questionnaire_id', 'diseases questions');
+    res.json(answers);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// get answer based on id
+exports.getAnswersById = async (req, res) => {
+  try {
+    const answers = await Answer.find({ _id: req.params.ansId })
       .populate('questionnaire_id', 'diseases questions');
     res.json(answers);
   } catch (err) {
