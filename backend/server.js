@@ -90,6 +90,7 @@ passport.deserializeUser((obj, done) => {
 
 // Route to start the Google OAuth flow
 app.get('/auth/google',
+  
   passport.authenticate('google', { scope: authConfig.googleAuth.scopes })
 );
 

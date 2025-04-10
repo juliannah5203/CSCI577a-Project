@@ -59,7 +59,7 @@ const HeaderSection = () => {
 const SignInPage = () => {
   const handleSignIn = () => {
     // 重定向到后端的 Google OAuth 端点
-    window.location.href = '/auth/google';
+    window.location.href = 'http://localhost:5001/auth/google';
   };
 
   const buttonStyle = {
