@@ -56,6 +56,7 @@ router.get('/api/users/profile', authController.getUserProfile);
  *       401:
  *         description: "Unauthorized access."
  */
+//router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
 router.put('/api/users/profile', authController.updateUserProfile);  
 
 

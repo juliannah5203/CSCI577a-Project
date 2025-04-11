@@ -22,7 +22,7 @@ FEATURES:
 
 ## 1. User Account Management & Google Authentication
 
-### 1.1. GET /api/auth/google
+### 1.1. GET /auth/google
 ```
 DESCRIPTION: Initiates Google OAuth 2.0 flow
 METHOD: GET
@@ -36,7 +36,7 @@ ERROR_RESPONSE:
   - 400: Bad Request (invalid parameters)
 ```
 
-### 1.2. GET /api/auth/google/callback
+### 1.2. GET /auth/google/callback
 ```
 DESCRIPTION: Handles OAuth callback from Google
 METHOD: GET
