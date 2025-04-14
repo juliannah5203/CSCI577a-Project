@@ -217,11 +217,6 @@ const UserProfile = () => {
       <HeaderSection username={profile.name} />
       <Box sx={styles.profileCard}>
         <Box sx={styles.avatarRow}>
-          <img
-            src={profile.profilePicture || '/default-avatar.png'}
-            alt="avatar"
-            style={styles.avatar}
-          />
           <Box sx={{ flex: 1 }}>
             <Typography variant="h5">{profile.name}</Typography>
           </Box>
@@ -246,7 +241,7 @@ const UserProfile = () => {
           <strong>Email:</strong> {profile.email}
         </Box>
         <Box sx={styles.infoRow}>
-          <strong>Sex:</strong>
+          <strong>Gender:</strong>
           {editing ? (
             <select
               name="sex"
