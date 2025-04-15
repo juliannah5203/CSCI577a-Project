@@ -2,14 +2,14 @@ const Answer = require('../models/Answer');
 const moodTrendCache = require('../utils/moodTrendCache');
 const {getSummary} = require("../services/aiService")
 const Setting = require('../models/Setting');
-
+const Suggestion = require('../models/Suggestion');
 
 // 创建答案
 exports.createAnswer = async (req, res) => {
   try {
 
     // TODO: user_id
-    const userId = req.user.id; // "67fe2965de23dba663a9ed55"; //req.user.id; // req.session.user && req.session.user.id;
+    const userId = "67fe2965de23dba663a9ed55"; //req.user.id; // req.session.user && req.session.user.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -23,9 +23,8 @@ exports.createAnswer = async (req, res) => {
     
   // update last checkin time
 
-  // TODO: user_id
     const setting = await Setting.findOneAndUpdate(
-      { user_id: req.user.id }, // "67fe2965de23dba663a9ed55" },
+      { user_id: userId }, // "67fe2965de23dba663a9ed55" },
       { $set: { last_checkin_day: new Date() } },
       { new: true, runValidators: true }
     );
@@ -34,8 +33,12 @@ exports.createAnswer = async (req, res) => {
     // call AI
     const prompt = answer;
     const ai_feedback = await getSummary(prompt);
-        // respond
+    // respond
     answer.ai_feedback = ai_feedback;
+    // save ai feed_back
+    const suggestion = new Suggestion({user_id: userId, content: ai_feedback});
+    await suggestion.save();
+    
     // console.log(ai_feedback)
     res.status(201).json(answer);
   }catch (err){
