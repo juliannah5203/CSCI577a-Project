@@ -20,21 +20,22 @@ exports.createSafeUserResponse = (user) => {
     email: user.email,
     name: user.username,
     diseases: user.diseases,
-    gender: user.gender,
-    time_zone: user.time_zone
+    sex: user.gender,
+    region: user.time_zone,
+    // profilePicture: user.profilePicture || null
   };
 };
 
-// Validates that all required fields are present in a profile update
+// Validates that profile update data is valid (allows partial updates)
 exports.validateProfileUpdate = (body) => {
   const { name, region, sex } = body;
   const errors = {};
-  if (!name) errors.name = 'Name is required';
-  if (!region) errors.region = 'Region is required';
-  if (!sex) errors.sex = 'Sex is required';
-
-  // Add any validation rules for the frontend fields
   
+  // Only validate fields that are included in the update
+  if (name !== undefined && !name) errors.name = 'Name cannot be empty';
+  if (region !== undefined && !region) errors.region = 'Region cannot be empty';
+  if (sex !== undefined && !sex) errors.sex = 'Sex cannot be empty';
+
   if (Object.keys(errors).length > 0) {
     return { valid: false, errors };
   }

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
   Avatar,
   Menu,
   MenuItem,
-  IconButton,
+  IconButton
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
@@ -17,13 +18,8 @@ const NavigationMenu = () => {
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const menuItems = [
     { label: "Dashboard", route: "/dashboard" },
@@ -56,10 +52,7 @@ const NavigationMenu = () => {
         }}
       >
         {menuItems.map((item) => (
-          <MenuItem
-            key={item.route}
-            onClick={() => handleMenuItemClick(item.route)}
-          >
+          <MenuItem key={item.route} onClick={() => handleMenuItemClick(item.route)}>
             {item.label}
           </MenuItem>
         ))}
@@ -69,7 +62,7 @@ const NavigationMenu = () => {
 };
 
 // Header Section Component with transparent overlay and a fixed minHeight
-const HeaderSection = () => {
+const HeaderSection = ({ username }) => {
   const navigate = useNavigate();
 
   return (
@@ -114,11 +107,8 @@ const HeaderSection = () => {
         {/* Right: User info */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box sx={{ textAlign: 'right' }}>
-            <Typography
-              onClick={() => navigate('/userprofile')}
-              sx={{ cursor: 'pointer' }}
-            >
-              Username
+            <Typography onClick={() => navigate('/userprofile')} sx={{ cursor: 'pointer' }}>
+              {username || 'Username'}
             </Typography>
             <Typography
               variant="body2"
@@ -146,6 +136,10 @@ const HeaderSection = () => {
   );
 };
 
+HeaderSection.propTypes = {
+  username: PropTypes.string
+};
+
 const UserProfile = () => {
   const [profile, setProfile] = useState({
     name: '',
@@ -156,10 +150,11 @@ const UserProfile = () => {
   });
   const [originalProfile, setOriginalProfile] = useState(null);
   const [editing, setEditing] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch user profile
   useEffect(() => {
-    axios.get('/api/users/profile', { withCredentials: true })
+    axios.get('http://localhost:5001/api/users/profile', { withCredentials: true })
       .then(res => {
         const data = res.data;
         const newProfile = {
@@ -167,27 +162,36 @@ const UserProfile = () => {
           email: data.email || '',
           region: data.region || '',
           sex: data.sex || '',
-          profilePicture: data.profilePicture || '',
+          // profilePicture: data.profilePicture || '',
         };
         setProfile(newProfile);
         setOriginalProfile(newProfile);
       })
-      .catch(err => console.error('Failed to fetch profile:', err));
-  }, []);
+      .catch(err => {
+        console.error('Failed to fetch profile:', err);
+        // If profile fetching fails, redirect the user to the sign-in page.
+        navigate('/');
+      });
+  }, [navigate]);
 
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
+  // Toggle edit mode. Save a backup before editing.
   const handleEditToggle = () => {
-    if (!editing) setOriginalProfile(profile);
-    else setProfile(originalProfile);
+    if (!editing) {
+      setOriginalProfile(profile);
+    } else {
+      setProfile(originalProfile);
+    }
     setEditing(!editing);
   };
 
+  // Update the profile via a PUT request.
   const handleSave = () => {
     const { name, region, sex } = profile;
-    axios.put('/api/users/profile', { name, region, sex }, { withCredentials: true })
+    axios.put('http://localhost:5001/api/users/profile', { name, region, sex }, { withCredentials: true })
       .then(() => {
         setEditing(false);
       })
@@ -210,24 +214,17 @@ const UserProfile = () => {
         position: 'relative',
       }}
     >
-      <HeaderSection />
-
-      <div style={styles.profileCard}>
-        <div style={styles.avatarRow}>
-          <img
-            src={profile.profilePicture || '/default-avatar.png'}
-            alt="avatar"
-            style={styles.avatar}
-          />
-          <div style={{ flex: 1 }}>
-            <h2>{profile.name}</h2>
-          </div>
+      <HeaderSection username={profile.name} />
+      <Box sx={styles.profileCard}>
+        <Box sx={styles.avatarRow}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h5">{profile.name}</Typography>
+          </Box>
           <button onClick={handleEditToggle} style={styles.editBtn}>
             {editing ? 'Cancel' : 'Edit'}
           </button>
-        </div>
-
-        <div style={styles.infoRow}>
+        </Box>
+        <Box sx={styles.infoRow}>
           <strong>Name:</strong>
           {editing ? (
             <input
@@ -239,14 +236,12 @@ const UserProfile = () => {
           ) : (
             profile.name
           )}
-        </div>
-
-        <div style={styles.infoRow}>
+        </Box>
+        <Box sx={styles.infoRow}>
           <strong>Email:</strong> {profile.email}
-        </div>
-
-        <div style={styles.infoRow}>
-          <strong>Sex:</strong>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <strong>Gender:</strong>
           {editing ? (
             <select
               name="sex"
@@ -261,9 +256,8 @@ const UserProfile = () => {
           ) : (
             profile.sex
           )}
-        </div>
-
-        <div style={styles.infoRow}>
+        </Box>
+        <Box sx={styles.infoRow}>
           <strong>Region:</strong>
           {editing ? (
             <input
@@ -275,16 +269,15 @@ const UserProfile = () => {
           ) : (
             profile.region
           )}
-        </div>
-
+        </Box>
         {editing && (
-          <div style={{ textAlign: 'right' }}>
+          <Box sx={{ textAlign: 'right', mt: 2 }}>
             <button onClick={handleSave} style={styles.saveBtn}>
               Save
             </button>
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
     </Box>
   );
 };
@@ -324,7 +317,6 @@ const styles = {
     border: 'none',
     padding: '10px 20px',
     borderRadius: '6px',
-    marginTop: '1rem',
     cursor: 'pointer',
   },
   infoRow: {
