@@ -1,12 +1,15 @@
 const Answer = require('../models/Answer');
 const moodTrendCache = require('../utils/moodTrendCache');
-const {ai} = require("../services/aiService")
+const {getSummary} = require("../services/aiService")
+const Setting = require('../models/Setting');
+
 
 // 创建答案
 exports.createAnswer = async (req, res) => {
   try {
 
-    const userId = req.user.id; // req.session.user && req.session.user.id;
+    // TODO: user_id
+    const userId = req.user.id; // "67fe2965de23dba663a9ed55"; //req.user.id; // req.session.user && req.session.user.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -18,39 +21,33 @@ exports.createAnswer = async (req, res) => {
     // Addde: Clear user's cached mood trend data when a new answer is added
     moodTrendCache.clearUserCache(answer.user_id);
     
-  } catch (err) {
+  // update last checkin time
+
+  // TODO: user_id
+    const setting = await Setting.findOneAndUpdate(
+      { user_id: req.user.id }, // "67fe2965de23dba663a9ed55" },
+      { $set: { last_checkin_day: new Date() } },
+      { new: true, runValidators: true }
+    );
+    if (!setting) return res.status(404).json({ error: 'Setting not found' });
+
+    // call AI
+    const prompt = answer;
+    const ai_feedback = await getSummary(prompt);
+        // respond
+    answer.ai_feedback = ai_feedback;
+    // console.log(ai_feedback)
+    res.status(201).json(answer);
+  }catch (err){
+    console.log(err)
     res.status(400).json({ error: err.message });
   }
-
-  // update last checkin time
-  try {
-      const setting = await Setting.findOneAndUpdate(
-        { user_id: req.params.userId },
-        { $set: { last_checkin_day: Date.now } },
-        { new: true, runValidators: true }
-      );
-      if (!setting) return res.status(404).json({ error: 'Setting not found' });
-    } catch (err) {
-      res.status(400).json({ error: err.message });
-    }
-
-    // TODO: call AI
-    const prompt = answer;
-    const ai_feedback = await ai(prompt);
-
-
-    // respond
-    answer.ai_feedback = ai_feedback;
-    res.status(201).json(answer);
-
-
 };
 
 // 获取用户的答案（填充问卷信息）
 exports.getAnswersByUserId = async (req, res) => {
   try {
-    const answers = await Answer.find({ user_id: req.params.userId })
-      .populate('questionnaire_id', 'diseases questions');
+    const answers = await Answer.find({ user_id: req.params.userId });
     res.json(answers);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -60,8 +57,7 @@ exports.getAnswersByUserId = async (req, res) => {
 // get answer based on id
 exports.getAnswersById = async (req, res) => {
   try {
-    const answers = await Answer.find({ _id: req.params.ansId })
-      .populate('questionnaire_id', 'diseases questions');
+    const answers = await Answer.find({ _id: req.params.ansId });
     res.json(answers);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -108,8 +104,7 @@ exports.deleteAnswer = async (req, res) => {
 exports.getLatestAnswer = async (req, res) => {
   try {
     const answer = await Answer.findOne({ user_id: req.params.userId })
-      .sort({ date: -1 })
-      .populate('questionnaire_id', 'diseases questions');
+      .sort({ date: -1 });
       
     if (!answer) return res.status(404).json({ error: 'No answers found for this user' });
     
@@ -143,7 +138,6 @@ exports.getAnswersByDateRange = async (req, res) => {
       user_id: userId,
       date: { $gte: start, $lte: end }
     })
-    .populate('questionnaire_id', 'diseases questions')
     .sort({ date: 1 });
     
     res.json(answers);

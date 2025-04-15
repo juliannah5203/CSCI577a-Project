@@ -29,7 +29,6 @@ exports.getMoodTrends = async (req, res) => {
       user_id: userId,
       date: { $gte: startDate, $lte: endDate }
     })
-    .populate('questionnaire_id', 'diseases questions')
     .sort({ date: 1 });
     
     // Process answers to create trend data

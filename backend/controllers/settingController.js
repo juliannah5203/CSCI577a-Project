@@ -15,7 +15,6 @@ exports.createSetting = async (req, res) => {
 exports.getSettingByUserId = async (req, res) => {
   try {
     const setting = await Setting.findOne({ user_id: req.params.userId })
-      .populate('user_id', 'username email');
     if (!setting) return res.status(404).json({ error: 'Setting not found' });
     res.json(setting);
   } catch (err) {

@@ -43,16 +43,16 @@ const populateTest = async () => {
     await setting.save();
     console.log('Setting created for user:', user._id);
 
-    const questionnaire = new Questionnaire({
-      diseases: 'depression',
-      questions: ['How are you feeling today?', 'Have you felt anxious recently?']
-    });
-    await questionnaire.save();
-    console.log('Questionnaire created:', questionnaire._id);
+    // const questionnaire = new Questionnaire({
+    //   diseases: 'depression',
+    //   questions: ['How are you feeling today?']
+    // });
+    // await questionnaire.save();
+    // console.log('Questionnaire created:', questionnaire._id);
 
     const answer = new Answer({
       user_id: user._id,
-      questionnaire_id: questionnaire._id,
+      // questionnaire_id: questionnaire._id,
       moodRating: 3,
       note: 'Feeling stressed'
     });
@@ -72,8 +72,7 @@ const populateTest = async () => {
       .populate('user_id', 'username email');
     console.log('User Setting with Populated User:', JSON.stringify(userSetting, null, 2));
 
-    const userAnswers = await Answer.find({ user_id: user._id })
-      .populate('questionnaire_id', 'diseases questions');
+    const userAnswers = await Answer.find({ user_id: user._id });
     console.log('User Answers with Populated Questionnaire:', JSON.stringify(userAnswers, null, 2));
 
     const userSuggestions = await Suggestion.find({ user_id: user._id })
@@ -82,8 +81,7 @@ const populateTest = async () => {
 
     const userData = await User.findById(user._id);
     const settingData = await Setting.findOne({ user_id: user._id });
-    const answersData = await Answer.find({ user_id: user._id })
-      .populate('questionnaire_id', 'diseases questions');
+    const answersData = await Answer.find({ user_id: user._id });
     const suggestionsData = await Suggestion.find({ user_id: user._id });
 
     console.log('\n=== Comprehensive User Data ===\n');

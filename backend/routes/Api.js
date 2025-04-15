@@ -12,6 +12,10 @@ const moodTrendController = require('../controllers/moodTrendController');
 const cacheMiddleware = require('../middlewares/cacheMiddleware');
 const checkAlertMiddleware = require('../middlewares/checkAlertMiddleware');
 
+
+
+
+
 // app.post('/login', authMiddleware, checkLastCheckin, (req, res) => {
 //   res.json({
 //     token: 'xxx',
@@ -30,6 +34,10 @@ const checkAlertMiddleware = require('../middlewares/checkAlertMiddleware');
  *         description: "A successful response with 'Hello World!' message."
  */
 router.get("", async (req, res) => { res.status(200).json("Hello World!"); });
+
+
+router.get("/t", async (req, res) => { console.log("req.user ", typeof(req.user), " req.session.user ", typeof(req.session.user));res.status(200).json("Hello World!"); });
+
 
 /**
  * @swagger
@@ -315,6 +323,11 @@ router.put('/api/answers/:id', answerController.updateAnswer);
  */
 router.delete('/api/answers/:id', answerController.deleteAnswer);
 
+
+router.post('/api/answers', answerController.createAnswer);
+
+
+
 /**
  * @swagger
  * /api/suggestions:
@@ -472,7 +485,6 @@ router.get('/users/:userId/mood-aggregation', isAuthenticated, cacheMiddleware.c
 // router.put('/api/settings/:userId', settingController.updateSetting);
 // router.delete('/api/settings/:userId', settingController.deleteSetting);
 
-// router.post('/api/answers', answerController.createAnswer);
 // router.get('/api/answers/:userId', answerController.getAnswersByUserId);
 // router.put('/api/answers/:id', answerController.updateAnswer);
 // router.delete('/api/answers/:id', answerController.deleteAnswer);
