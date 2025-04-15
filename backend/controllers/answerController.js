@@ -1,16 +1,23 @@
 const Answer = require('../models/Answer');
 const moodTrendCache = require('../utils/moodTrendCache');
+const {ai} = require("../services/aiService")
 
 // 创建答案
 exports.createAnswer = async (req, res) => {
   try {
+
+    const userId = req.user.id; // req.session.user && req.session.user.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    req.body.user_id = userId;
+
     const answer = new Answer(req.body);
     await answer.save();
 
     // Addde: Clear user's cached mood trend data when a new answer is added
     moodTrendCache.clearUserCache(answer.user_id);
     
-    res.status(201).json(answer);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -23,10 +30,19 @@ exports.createAnswer = async (req, res) => {
         { new: true, runValidators: true }
       );
       if (!setting) return res.status(404).json({ error: 'Setting not found' });
-      res.json(setting);
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
+
+    // TODO: call AI
+    const prompt = answer;
+    const ai_feedback = await ai(prompt);
+
+
+    // respond
+    answer.ai_feedback = ai_feedback;
+    res.status(201).json(answer);
+
 
 };
 

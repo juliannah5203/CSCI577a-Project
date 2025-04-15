@@ -44,6 +44,7 @@ const {
   
     const result = await chatSession.sendMessage("We are a mental health app. Give me a one-sentence positive message given this person's input. Here's the daily check-in message: " + JSON.stringify(prompt));
     console.log(result.response.text());
+    return result.response.text();
   }
 
   module.exports = { getSummary };

@@ -9,8 +9,16 @@ const authController = require('../controllers/authController');
 const { isAuthenticated } = require('../middlewares/authMiddleware');
 // added
 const moodTrendController = require('../controllers/moodTrendController');
-const cacheMiddleware = require('../middleware/cacheMiddleware');
+const cacheMiddleware = require('../middlewares/cacheMiddleware');
+const checkAlertMiddleware = require('../middlewares/checkAlertMiddleware');
 
+// app.post('/login', authMiddleware, checkLastCheckin, (req, res) => {
+//   res.json({
+//     token: 'xxx',
+//     user: req.user,
+//     needsAlert: req.needsAlert
+//   });
+// });
 
 /**
  * @swagger
@@ -235,6 +243,12 @@ router.delete('/api/settings/:userId', settingController.deleteSetting);
  *         description: "Invalid answer data."
  */
 router.post('/api/checkins', answerController.createAnswer);
+
+router.get('/api/alert', checkAlertMiddleware, (req, res) => {
+    res.json({
+        need_alert:  req.needsAlert
+    });
+});
 
 /**
  * @swagger
