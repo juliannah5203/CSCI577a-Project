@@ -234,8 +234,6 @@ const calculateAverageDailyRate = (data) => {
 const getChartData = (range, today = new Date()) => {
   let days = 7;
   if (range === "month") days = 30;
-  else if (range === "season") days = 90;
-  else if (range === "year") days = 365;
 
   const fromDate = new Date(today);
   fromDate.setDate(today.getDate() - days + 1);
@@ -273,6 +271,13 @@ export default function Trends() {
     calculateStatistics(chartData);
   const trendChange = calculateTrendChange(chartData);
   const averageDailyRate = calculateAverageDailyRate(chartData);
+
+  const formatValue = (val) =>
+    !isFinite(val) || isNaN(val) ? "-" : Number(val).toFixed(2);
+
+  const displayAverageDailyRate = formatValue(averageDailyRate);
+  const displayTrendChange = formatValue(trendChange);
+  const displayAverageMood = formatValue(averageMood);
 
   return (
     <Box
@@ -312,8 +317,6 @@ export default function Trends() {
             >
               <ToggleButton value="week">Week</ToggleButton>
               <ToggleButton value="month">Month</ToggleButton>
-              <ToggleButton value="season">Season</ToggleButton>
-              <ToggleButton value="year">Year</ToggleButton>
             </ToggleButtonGroup>
           </Box>
         </Stack>
@@ -357,14 +360,14 @@ export default function Trends() {
             <Typography variant="subtitle1" gutterBottom>
               Daily Rate
             </Typography>
-            <Typography variant="h6">{averageDailyRate}</Typography>
+            <Typography variant="h6">{displayAverageDailyRate}</Typography>
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
             <Typography variant="subtitle1" gutterBottom>
               Trend Change
             </Typography>
-            <Typography variant="h6">{trendChange}</Typography>
+            <Typography variant="h6">{displayTrendChange}</Typography>
           </Paper>
         </Stack>
 
@@ -373,7 +376,7 @@ export default function Trends() {
             <Typography variant="subtitle1" gutterBottom>
               Average Mood
             </Typography>
-            <Typography variant="h6">{averageMood.toFixed(2)}</Typography>
+            <Typography variant="h6">{displayAverageMood}</Typography>
           </Paper>
 
           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>

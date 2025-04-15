@@ -136,6 +136,14 @@ export default function History() {
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
+              <TextField
+                label="AI Suggestion"
+                value={`Consider maintaining this energy by planning something enjoyable mid-week.`}
+                multiline
+                fullWidth
+                InputProps={{ readOnly: true }}
+                sx={{ mt: 2 }}
+              />
             </>
           ) : (
             <Typography variant="body2" color="text.secondary">
