@@ -90,11 +90,6 @@ const UserProfile = () => {
 
       <div style={styles.profileCard}>
         <div style={styles.avatarRow}>
-          <img
-            src={profile.profilePicture || '/default-avatar.png'}
-            alt="avatar"
-            style={styles.avatar}
-          />
           <Box sx={{ flex: 1 }}>
             <Typography variant="h5">{profile.name}</Typography>
           </Box>
