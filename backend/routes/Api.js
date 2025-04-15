@@ -36,7 +36,7 @@ const checkAlertMiddleware = require('../middlewares/checkAlertMiddleware');
 router.get("", async (req, res) => { res.status(200).json("Hello World!"); });
 
 
-router.get("/t", async (req, res) => { try {console.log("req.user ", typeof(req.user.id), " req.session.user ", typeof(req.session.user));res.status(200).json("Hello World!");} catch (err){res.status(200).json("error");} });
+// router.get("/t", async (req, res) => { try {console.log("req.user ", typeof(req.user.id), " req.session.user ", typeof(req.session.user));res.status(200).json("Hello World!");} catch (err){res.status(200).json("error");} });
 
 
 /**
@@ -61,8 +61,8 @@ router.get("/api", async (req, res) => { res.status(200).json("Hello World!"); }
  *       401:
  *         description: "Unauthorized access."
  */
-// router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
-router.get('/api/users/profile', authController.getUserProfile);
+router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+// router.get('/api/users/profile', authController.getUserProfile);
 // router.get('/api/users/profile', (req, res, next) => {
 //   console.log(`[${new Date().toISOString()}] API call: GET /api/users/profile`);
 //   next();
@@ -79,8 +79,8 @@ router.get('/api/users/profile', authController.getUserProfile);
  *       401:
  *         description: "Unauthorized access."
  */
-//router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
-router.put('/api/users/profile', authController.updateUserProfile);  
+router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
+// router.put('/api/users/profile', authController.updateUserProfile);  
 // router.put('/api/users/profile', (req, res, next) => {
 //   console.log(`[${new Date().toISOString()}] API call: PUT /api/users/profile`, req.body);
 //   next();
@@ -189,7 +189,7 @@ router.delete('/api/users/:id', userController.deleteUser);
  *       400:
  *         description: "Invalid setting data."
  */
-router.post('/api/settings', settingController.createSetting);
+router.post('/api/settings', isAuthenticated, settingController.createSetting);
 
 /**
  * @swagger
@@ -205,7 +205,7 @@ router.post('/api/settings', settingController.createSetting);
  *       200:
  *         description: "Returns the user's settings."
  */
-router.get('/api/settings/:userId', settingController.getSettingByUserId);
+router.get('/api/settings/:userId', isAuthenticated, settingController.getSettingByUserId);
 
 /**
  * @swagger
@@ -221,7 +221,7 @@ router.get('/api/settings/:userId', settingController.getSettingByUserId);
  *       200:
  *         description: "Setting updated successfully."
  */
-router.put('/api/settings/:userId', settingController.updateSetting);
+router.put('/api/settings/:userId', isAuthenticated, settingController.updateSetting);
 
 /**
  * @swagger
@@ -237,7 +237,7 @@ router.put('/api/settings/:userId', settingController.updateSetting);
  *       200:
  *         description: "Setting deleted successfully."
  */
-router.delete('/api/settings/:userId', settingController.deleteSetting);
+router.delete('/api/settings/:userId', isAuthenticated, settingController.deleteSetting);
 
 /**
  * @swagger
@@ -250,9 +250,9 @@ router.delete('/api/settings/:userId', settingController.deleteSetting);
  *       400:
  *         description: "Invalid answer data."
  */
-router.post('/api/checkins', answerController.createAnswer);
+router.post('/api/checkins', isAuthenticated, answerController.createAnswer);
 
-router.get('/api/alert', checkAlertMiddleware, (req, res) => {
+router.get('/api/alert', isAuthenticated, checkAlertMiddleware, (req, res) => {
     res.json({
         need_alert:  req.needsAlert
     });
@@ -272,7 +272,7 @@ router.get('/api/alert', checkAlertMiddleware, (req, res) => {
  *       200:
  *         description: "Returns the answers by user."
  */
-router.get('/api/checkins/:userId', answerController.getAnswersByUserId);
+router.get('/api/checkins/:userId', isAuthenticated, answerController.getAnswersByUserId);
 
 /**
  * @swagger
@@ -288,7 +288,7 @@ router.get('/api/checkins/:userId', answerController.getAnswersByUserId);
  *       200:
  *         description: "Returns the answers by id."
  */
-router.get('/api/checkins/:ansId', answerController.getAnswersById);
+router.get('/api/checkins/:ansId', isAuthenticated, answerController.getAnswersById);
 
 
 /**
@@ -305,7 +305,7 @@ router.get('/api/checkins/:ansId', answerController.getAnswersById);
  *       200:
  *         description: "Answer updated successfully."
  */
-router.put('/api/answers/:id', answerController.updateAnswer);
+router.put('/api/answers/:id', isAuthenticated, answerController.updateAnswer);
 
 /**
  * @swagger
@@ -321,10 +321,10 @@ router.put('/api/answers/:id', answerController.updateAnswer);
  *       200:
  *         description: "Answer deleted successfully."
  */
-router.delete('/api/answers/:id', answerController.deleteAnswer);
+router.delete('/api/answers/:id', isAuthenticated, answerController.deleteAnswer);
 
 
-router.post('/api/answers', answerController.createAnswer);
+router.post('/api/answers', isAuthenticated, answerController.createAnswer);
 
 
 
@@ -339,7 +339,7 @@ router.post('/api/answers', answerController.createAnswer);
  *       400:
  *         description: "Invalid suggestion data."
  */
-router.post('/api/suggestions', suggestionController.createSuggestion);
+router.post('/api/suggestions', isAuthenticated, suggestionController.createSuggestion);
 
 /**
  * @swagger
@@ -355,7 +355,7 @@ router.post('/api/suggestions', suggestionController.createSuggestion);
  *       200:
  *         description: "Returns the suggestions by user."
  */
-router.get('/api/suggestions/:userId', suggestionController.getSuggestionsByUserId);
+router.get('/api/suggestions/:userId', isAuthenticated, suggestionController.getSuggestionsByUserId);
 
 /**
  * @swagger
@@ -371,7 +371,7 @@ router.get('/api/suggestions/:userId', suggestionController.getSuggestionsByUser
  *       200:
  *         description: "Suggestion updated successfully."
  */
-router.put('/api/suggestions/:id', suggestionController.updateSuggestion);
+router.put('/api/suggestions/:id', isAuthenticated, suggestionController.updateSuggestion);
 
 /**
  * @swagger
@@ -387,7 +387,7 @@ router.put('/api/suggestions/:id', suggestionController.updateSuggestion);
  *       200:
  *         description: "Suggestion deleted successfully."
  */
-router.delete('/api/suggestions/:id', suggestionController.deleteSuggestion);
+router.delete('/api/suggestions/:id', isAuthenticated, suggestionController.deleteSuggestion);
 
 /**
  * @swagger
@@ -400,7 +400,7 @@ router.delete('/api/suggestions/:id', suggestionController.deleteSuggestion);
  *       400:
  *         description: "Invalid questionnaire data."
  */
-router.post('/api/questionnaires', questionnaireController.createQuestionnaire);
+router.post('/api/questionnaires', isAuthenticated, questionnaireController.createQuestionnaire);
 
 /**
  * @swagger
@@ -411,7 +411,7 @@ router.post('/api/questionnaires', questionnaireController.createQuestionnaire);
  *       200:
  *         description: "Returns a list of questionnaires."
  */
-router.get('/api/questionnaires', questionnaireController.getAllQuestionnaires);
+router.get('/api/questionnaires', isAuthenticated, questionnaireController.getAllQuestionnaires);
 
 /**
  * @swagger
@@ -427,7 +427,7 @@ router.get('/api/questionnaires', questionnaireController.getAllQuestionnaires);
  *       200:
  *         description: "Returns the questionnaire by ID."
  */
-router.get('/api/questionnaires/:id', questionnaireController.getQuestionnaireById);
+router.get('/api/questionnaires/:id', isAuthenticated, questionnaireController.getQuestionnaireById);
 
 /**
  * @swagger
@@ -443,7 +443,7 @@ router.get('/api/questionnaires/:id', questionnaireController.getQuestionnaireBy
  *       200:
  *         description: "Questionnaire updated successfully."
  */
-router.put('/api/questionnaires/:id', questionnaireController.updateQuestionnaire);
+router.put('/api/questionnaires/:id', isAuthenticated, questionnaireController.updateQuestionnaire);
 
 /**
  * @swagger
@@ -459,7 +459,7 @@ router.put('/api/questionnaires/:id', questionnaireController.updateQuestionnair
  *       200:
  *         description: "Questionnaire deleted successfully."
  */
-router.delete('/api/questionnaires/:id', questionnaireController.deleteQuestionnaire);
+router.delete('/api/questionnaires/:id', isAuthenticated, questionnaireController.deleteQuestionnaire);
 
 // added
 router.get('/users/:userId/mood-trends', isAuthenticated, cacheMiddleware.checkTrendCache, moodTrendController.getMoodTrends);
