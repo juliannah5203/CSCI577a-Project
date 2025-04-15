@@ -7,6 +7,9 @@ const suggestionController = require('../controllers/suggestionController');
 const questionnaireController = require('../controllers/questionnaireController');
 const authController = require('../controllers/authController');
 const { isAuthenticated } = require('../middlewares/authMiddleware');
+// added
+const moodTrendController = require('../controllers/moodTrendController');
+const cacheMiddleware = require('../middleware/cacheMiddleware');
 
 
 /**
@@ -431,8 +434,9 @@ router.put('/api/questionnaires/:id', questionnaireController.updateQuestionnair
  */
 router.delete('/api/questionnaires/:id', questionnaireController.deleteQuestionnaire);
 
-
-
+// added
+router.get('/users/:userId/mood-trends', isAuthenticated, cacheMiddleware.checkTrendCache, moodTrendController.getMoodTrends);
+router.get('/users/:userId/mood-aggregation', isAuthenticated, cacheMiddleware.checkTrendCache, moodTrendController.getMoodAggregation);
 
 // router.get("", async (req, res) => {res.status(200).json("Hello World!")})
 // router.get("/api", async (req, res) => {res.status(200).json("Hello World!")})
