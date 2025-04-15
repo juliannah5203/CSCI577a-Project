@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 // import React, {useState } from 'react';
 
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
@@ -14,6 +15,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Layout from './Layout';
 
+
+
+HeaderSection.propTypes = {
+  username: PropTypes.string
+};
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({
@@ -29,7 +35,7 @@ const UserProfile = () => {
 
   // Fetch user profile
   useEffect(() => {
-    axios.get('/api/users/profile', { withCredentials: true })
+    axios.get('http://localhost:5001/api/users/profile', { withCredentials: true })
       .then(res => {
         const data = res.data;
         const newProfile = {
@@ -37,7 +43,7 @@ const UserProfile = () => {
           email: data.email || '',
           region: data.region || '',
           sex: data.sex || '',
-          profilePicture: data.profilePicture || '',
+          // profilePicture: data.profilePicture || '',
         };
         setProfile(newProfile);
         setOriginalProfile(newProfile);
@@ -66,7 +72,7 @@ const UserProfile = () => {
   // Update the profile via a PUT request.
   const handleSave = () => {
     const { name, region, sex } = profile;
-    axios.put('/api/users/profile', { name, region, sex }, { withCredentials: true })
+    axios.put('http://localhost:5001/api/users/profile', { name, region, sex }, { withCredentials: true })
       .then(() => {
         setEditing(false);
       })
@@ -79,6 +85,7 @@ const UserProfile = () => {
   };
 
   return (
+
     <Layout>
 
       <div style={styles.profileCard}>
@@ -113,7 +120,7 @@ const UserProfile = () => {
           <strong>Email:</strong> {profile.email}
         </Box>
         <Box sx={styles.infoRow}>
-          <strong>Sex:</strong>
+          <strong>Gender:</strong>
           {editing ? (
             <select
               name="sex"

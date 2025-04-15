@@ -20,8 +20,9 @@ exports.createSafeUserResponse = (user) => {
     email: user.email,
     name: user.username,
     diseases: user.diseases,
-    gender: user.gender,
-    time_zone: user.time_zone
+    sex: user.gender,
+    region: user.time_zone,
+    // profilePicture: user.profilePicture || null
   };
 };
 
