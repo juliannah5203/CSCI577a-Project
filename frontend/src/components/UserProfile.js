@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 // import React, {useState } from 'react';
 
 import axios from 'axios';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
@@ -17,9 +17,9 @@ import Layout from './Layout';
 
 
 
-HeaderSection.propTypes = {
-  username: PropTypes.string
-};
+// HeaderSection.propTypes = {
+//   username: PropTypes.string
+// };
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({
