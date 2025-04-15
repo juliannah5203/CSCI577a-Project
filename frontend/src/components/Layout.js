@@ -141,6 +141,9 @@ const HeaderSection = () => {
     </Box>
   );
 };
+// HeaderSection.propTypes = {
+//   username: PropTypes.string
+// };
 
 // Layout Component
 const Layout = ({ children }) => {
