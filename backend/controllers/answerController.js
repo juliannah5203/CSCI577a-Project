@@ -8,8 +8,7 @@ const Suggestion = require('../models/Suggestion');
 exports.createAnswer = async (req, res) => {
   try {
 
-    // TODO: user_id
-    const userId = "67fe2965de23dba663a9ed55"; //req.user.id; // req.session.user && req.session.user.id;
+    const userId = req.user.id; //req.user.id; // req.session.user && req.session.user.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -42,7 +41,7 @@ exports.createAnswer = async (req, res) => {
     // console.log(ai_feedback)
     res.status(201).json(answer);
   }catch (err){
-    console.log(err)
+    // console.log(err)
     res.status(400).json({ error: err.message });
   }
 };
