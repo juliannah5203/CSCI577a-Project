@@ -66,8 +66,8 @@ The backend is divided into the following core modules:
 
 ```
 ENDPOINTS:
-- GET /api/auth/google: Initiates Google OAuth flow
-- GET /api/auth/google/callback: Handles OAuth callback
+- GET /auth/google: Initiates Google OAuth flow
+- GET /auth/google/callback: Handles OAuth callback
 - GET /api/users/profile: Retrieves user profile
 - PUT /api/users/profile: Updates user profile
 - POST /api/users/logout: Terminates session
@@ -86,10 +86,10 @@ METHODS:
 
 ```
 OAUTH_FLOW:
-1. Client requests /api/auth/google
+1. Client requests /auth/google
 2. Server constructs Google OAuth URL with required scopes and state parameter
 3. User authenticates with Google
-4. Google redirects to /api/auth/google/callback with authorization code
+4. Google redirects to /auth/google/callback with authorization code
 5. Server exchanges code for tokens using Google's token endpoint
 6. Server retrieves user information using the access token
 7. User record is created/updated in database

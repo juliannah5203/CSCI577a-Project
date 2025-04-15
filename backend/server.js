@@ -14,6 +14,11 @@ const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 
+// app.use(express.static('dist'))
+
+// swagger
+// http://localhost:5001/api-docs/
+
 const options = {
   definition: {
       openapi: '3.0.0',
@@ -41,9 +46,9 @@ app.use(express.json());
 // Allow cross-origin requests from the React frontend (assumed to run on http://localhost:3000)
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
+// Temp Disable Auth
 // Express session middleware using config settings
 app.use(session(authConfig.session));
-
 // Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
@@ -85,6 +90,7 @@ passport.deserializeUser((obj, done) => {
 
 // Route to start the Google OAuth flow
 app.get('/auth/google',
+  
   passport.authenticate('google', { scope: authConfig.googleAuth.scopes })
 );
 
@@ -122,6 +128,15 @@ app.get('/login-failure', (req, res) => {
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running' });
 });
+
+
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
 
 // Start the server
 const PORT = process.env.PORT || 5001;

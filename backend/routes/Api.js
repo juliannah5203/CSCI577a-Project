@@ -42,7 +42,12 @@ router.get("/api", async (req, res) => { res.status(200).json("Hello World!"); }
  *       401:
  *         description: "Unauthorized access."
  */
-router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+// router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+router.get('/api/users/profile', authController.getUserProfile);
+// router.get('/api/users/profile', (req, res, next) => {
+//   console.log(`[${new Date().toISOString()}] API call: GET /api/users/profile`);
+//   next();
+// }, authController.getUserProfile);
 
 /**
  * @swagger
@@ -55,7 +60,12 @@ router.get('/api/users/profile', isAuthenticated, authController.getUserProfile)
  *       401:
  *         description: "Unauthorized access."
  */
-router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);  
+//router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
+router.put('/api/users/profile', authController.updateUserProfile);  
+// router.put('/api/users/profile', (req, res, next) => {
+//   console.log(`[${new Date().toISOString()}] API call: PUT /api/users/profile`, req.body);
+//   next();
+// }, authController.updateUserProfile);  
 
 
 /**
