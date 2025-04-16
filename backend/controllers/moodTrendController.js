@@ -29,7 +29,7 @@ exports.getMoodTrends = async (req, res) => {
       user_id: userId,
       date: { $gte: startDate, $lte: endDate }
     })
-    .sort({ date: 1 });
+      .sort({ date: 1 });
     
     // Process answers to create trend data
     const trendData = processMoodTrends(answers);
@@ -71,31 +71,24 @@ function processMoodTrends(answers) {
     const dayAnswers = answersByDate[dateKey];
     
     // Calculate aggregated scores for this day
-    // Assuming answers.answers array contains numeric ratings from 1-5
-    const allScores = dayAnswers.flatMap(answer => answer.answers.map(Number));
+    const allScores = dayAnswers.map(answer => answer.moodRating);
     const averageScore = allScores.length > 0 
       ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length
       : null;
-    
-    // Get the questionnaire type (assuming only one per day)
-    const questionnaireType = dayAnswers[0]?.questionnaire_id?.diseases || 'general';
-    
+     
     // Extract user notes
     const notes = dayAnswers.map(answer => answer.notes).filter(Boolean);
     
     trendData.push({
       date: dateKey,
       averageScore,
-      questionnaireType,
       notes,
-      // Include individual question scores for detailed analysis
-      questionScores: dayAnswers.map(answer => {
-        const questions = answer.questionnaire_id?.questions || [];
-        return questions.map((question, index) => ({
-          question,
-          score: Number(answer.answers[index] || 0)
-        }));
-      }).flat()
+      // Include individual ratings for the day
+      moodEntries: dayAnswers.map(answer => ({
+        time: answer.date.toISOString(),
+        moodRating: answer.moodRating,
+        note: answer.note || ''
+      }))
     });
   });
 
@@ -127,11 +120,11 @@ exports.getMoodAggregation = async (req, res) => {
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-          averageScore: { $avg: { $avg: "$answers" } },
+          averageScore: { $avg: "$moodRating" },
           count: { $sum: 1 },
           hasNotes: {
             $sum: {
-              $cond: [{ $gt: [{ $strLenCP: "$notes" }, 0] }, 1, 0]
+              $cond: [{ $gt: [{ $strLenCP: "$note" }, 0] }, 1, 0]
             }
           }
         }
