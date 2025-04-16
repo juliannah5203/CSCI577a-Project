@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -17,17 +17,16 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isSameDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import PropTypes from "prop-types";
+import axios from "axios";
 import Layout from "./Layout";
 
-const mockData = [
-  {
-    date: "2025-04-07",
-    mood: 4,
-    emotion: "Stable",
-    note: "A new week, full of energy",
-  },
-  { date: "2025-04-06", mood: 5, emotion: "Happy", note: "Had sushi" },
-];
+const moodMap = {
+  1: { emoji: "😔", label: "Sad" },
+  2: { emoji: "😕", label: "Worried" },
+  3: { emoji: "😐", label: "Neutral" },
+  4: { emoji: "🙂", label: "Good" },
+  5: { emoji: "😄", label: "Great" },
+};
 
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -40,16 +39,7 @@ function ServerDay(props) {
       key={day.toString()}
       overlap="circular"
       badgeContent={
-        isSelected ? (
-          <Box
-            sx={{
-              width: 10,
-              height: 10,
-              bgcolor: "green",
-              borderRadius: "50%",
-            }}
-          />
-        ) : undefined
+        isSelected ? moodMap[(props.day.getDate() % 5) + 1]?.emoji : undefined
       }
     >
       <PickersDay
@@ -68,11 +58,54 @@ ServerDay.propTypes = {
 };
 
 export default function History() {
+  const [moodData, setMoodData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const prevDateRef = React.useRef(null);
 
-  const entry = mockData.find((e) => isSameDay(new Date(e.date), selectedDate));
+  const userId = "67ff8a8411c7fe597dcf6a92"; // Replace with actual user ID
 
-  const highlightedDays = mockData.map((e) => new Date(e.date));
+  const fetchMoodData = async (startDate) => {
+    try {
+      console.log("Fetching mood data for date:", startDate);
+      const formattedDate = format(startDate, "yyyy-MM-dd");
+      const res = await axios.get(
+        `http://localhost:5001/users/${userId}/mood-trends/?startDate=${formattedDate}&range=30`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Fetched mood trends:", res.data);
+      const flattened = res.data.data.flatMap((day) =>
+        day.moodEntries.map((entry) => ({
+          date: entry.time.split("T")[0],
+          mood: entry.moodRating,
+          note: entry.note,
+        }))
+      );
+      setMoodData(flattened);
+    } catch (err) {
+      console.error("Failed to fetch mood trends", err);
+    }
+  };
+
+  const entry = moodData.find((e) => isSameDay(new Date(e.date), selectedDate));
+
+  const highlightedDays = moodData.map((e) => new Date(e.date));
+
+  useEffect(() => {
+    console.log("selectedDate:", selectedDate);
+    if (selectedDate) {
+      const currentMonth = selectedDate.getMonth();
+      const currentYear = selectedDate.getFullYear();
+      const prevMonth = prevDateRef.current?.getMonth();
+      const prevYear = prevDateRef.current?.getFullYear();
+
+      if (currentMonth !== prevMonth || currentYear !== prevYear) {
+        fetchMoodData(selectedDate);
+        prevDateRef.current = selectedDate;
+      }
+    }
+  }, [selectedDate]);
 
   return (
     <Layout>
@@ -104,7 +137,15 @@ export default function History() {
           >
             <DateCalendar
               value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
+              onChange={(newValue) => {
+                console.log("Date selected:", newValue);
+                setSelectedDate(newValue);
+              }}
+              onMonthChange={(date) => {
+                console.log("Month changed to:", date);
+                setSelectedDate(date);
+              }}
+              onViewChange={(view) => console.log("View changed to:", view)}
               slots={{ day: ServerDay }}
               slotProps={{ day: { highlightedDays } }}
               sx={{
@@ -145,19 +186,14 @@ export default function History() {
               <>
                 <Stack direction="row" spacing={2} mb={2}>
                   <Chip label="Mood" color="success" size="small" />
-                  <Typography variant="h6">{entry.mood}</Typography>
+                  <Typography variant="h6">
+                    {moodMap[entry.mood]?.emoji} {moodMap[entry.mood]?.label}
+                  </Typography>
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2}>
-                  <Chip label="Emotion" color="success" size="small" />
-                  <Typography variant="h6">{entry.emotion}</Typography>
+                  <Chip label="Note" color="success" size="small" />
+                  <Typography variant="h6">{entry.note}</Typography>
                 </Stack>
-                <TextField
-                  label="Note"
-                  value={entry.note}
-                  multiline
-                  fullWidth
-                  InputProps={{ readOnly: true }}
-                />
                 <TextField
                   label="AI Suggestion"
                   value={`Consider maintaining this energy by planning something enjoyable mid-week.`}

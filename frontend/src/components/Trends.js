@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -15,184 +15,9 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Layout from "./Layout";
+import axios from "axios";
 
-const fullMoodData = [
-  {
-    date: "2025-03-09",
-    mood: 3,
-    emotion: "Calm",
-    note: "The whole day was calm, no big mood swings.",
-  },
-  {
-    date: "2025-03-10",
-    mood: 2,
-    emotion: "Tired",
-    note: "So much work, not feeling very energetic.",
-  },
-  {
-    date: "2025-03-11",
-    mood: 4,
-    emotion: "Invigorated",
-    note: "Felt great after the workout.",
-  },
-  {
-    date: "2025-03-12",
-    mood: 2,
-    emotion: "Anxious",
-    note: "A bit stressed out about the presentation.",
-  },
-  {
-    date: "2025-03-13",
-    mood: 3,
-    emotion: "Stable",
-    note: "Nothing special happened today.",
-  },
-  {
-    date: "2025-03-14",
-    mood: 4,
-    emotion: "Happy",
-    note: "Had a great time eating with friends.",
-  },
-  {
-    date: "2025-03-15",
-    mood: 5,
-    emotion: "Happy",
-    note: "Went hiking on the weekend, beautiful weather.",
-  },
-  {
-    date: "2025-03-16",
-    mood: 5,
-    emotion: "Relaxed",
-    note: "Watched Netflix all day, felt relaxed.",
-  },
-  {
-    date: "2025-03-17",
-    mood: 3,
-    emotion: "Indifferent",
-    note: "Back to school, feeling neutral.",
-  },
-  {
-    date: "2025-03-18",
-    mood: 2,
-    emotion: "Nervous",
-    note: "Presentation deadline approaching.",
-  },
-  {
-    date: "2025-03-19",
-    mood: 1,
-    emotion: "Frustrated",
-    note: "The report was rejected, feeling discouraged.",
-  },
-  {
-    date: "2025-03-20",
-    mood: 2,
-    emotion: "Sad",
-    note: "Didn't sleep well, feeling down.",
-  },
-  {
-    date: "2025-03-21",
-    mood: 3,
-    emotion: "Stable",
-    note: "Maintained emotional stability.",
-  },
-  {
-    date: "2025-03-22",
-    mood: 5,
-    emotion: "Satisfied",
-    note: "Had fun at an interesting event.",
-  },
-  {
-    date: "2025-03-23",
-    mood: 4,
-    emotion: "Joyful",
-    note: "Cooked with friends, very relaxing.",
-  },
-  {
-    date: "2025-03-24",
-    mood: 3,
-    emotion: "Normal",
-    note: "Routine, everything is steady.",
-  },
-  {
-    date: "2025-03-25",
-    mood: 3,
-    emotion: "Focused",
-    note: "Concentrated on completing my assignments.",
-  },
-  {
-    date: "2025-03-26",
-    mood: 4,
-    emotion: "Relaxed",
-    note: "Finally submitted the report, feeling relieved.",
-  },
-  {
-    date: "2025-03-27",
-    mood: 5,
-    emotion: "Excited",
-    note: "Got a job interview invitation.",
-  },
-  {
-    date: "2025-03-28",
-    mood: 5,
-    emotion: "Confident",
-    note: "The presentation went well.",
-  },
-  {
-    date: "2025-03-29",
-    mood: 4,
-    emotion: "Satisfied",
-    note: "Preparing for a weekend trip.",
-  },
-  {
-    date: "2025-03-30",
-    mood: 3,
-    emotion: "Calm",
-    note: "Relaxing at home, organizing my space.",
-  },
-  {
-    date: "2025-03-31",
-    mood: 2,
-    emotion: "Tired",
-    note: "Feeling drained after going out.",
-  },
-  {
-    date: "2025-04-01",
-    mood: 3,
-    emotion: "Relaxed",
-    note: "Slowed down, a very peaceful day.",
-  },
-  { date: "2025-04-02", mood: 3, emotion: "Stable", note: "Regular workday." },
-  {
-    date: "2025-04-03",
-    mood: 4,
-    emotion: "Optimistic",
-    note: "Looking forward to the future.",
-  },
-  {
-    date: "2025-04-04",
-    mood: 4,
-    emotion: "Happy",
-    note: "Went hiking with friends.",
-  },
-  {
-    date: "2025-04-05",
-    mood: 5,
-    emotion: "Happy",
-    note: "Had a therapeutic weekend trip.",
-  },
-  {
-    date: "2025-04-06",
-    mood: 4,
-    emotion: "Relaxed",
-    note: "Read a great book.",
-  },
-  {
-    date: "2025-04-07",
-    mood: 4,
-    emotion: "Stable",
-    note: "Starting the new week with energy.",
-  },
-];
+const userId = "67ff8a8411c7fe597dcf6a92"; // Replace with dynamic user ID if available
 
 const feedbackSamples = [
   "Your mood has been pretty stable this week, keep it up! 👍",
@@ -232,40 +57,50 @@ const calculateAverageDailyRate = (data) => {
   return averageRate.toFixed(2);
 };
 
-const getChartData = (range, today = new Date()) => {
-  let days = 7;
-  if (range === "month") days = 30;
-
-  const fromDate = new Date(today);
-  fromDate.setDate(today.getDate() - days + 1);
-
-  return fullMoodData
-    .filter(
-      (entry) =>
-        new Date(entry.date) >= fromDate && new Date(entry.date) <= today
-    )
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-};
-
 export default function Trends() {
-  const [range, setRange] = useState("week");
+  const [range, setRange] = useState(7);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [chartData, setChartData] = useState(getChartData(range, selectedDate));
+  const [chartData, setChartData] = useState([]);
   const [feedback] = useState(() => {
     const rand = Math.floor(Math.random() * feedbackSamples.length);
     return feedbackSamples[rand];
   });
 
+  const fetchMoodAggregation = async (rangeValue = 7, date = new Date()) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5001/users/${userId}/mood-aggregation/?endDate=${format(
+          date,
+          "yyyy-MM-dd"
+        )}&range=${rangeValue}`,
+        { withCredentials: true }
+      );
+      console.log("Mood aggregation data:", res.data);
+      const sortedData = res.data.dailyData
+        .map((entry) => ({
+          ...entry,
+          mood: entry.averageScore,
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      console.log("Sorted data:", sortedData);
+      setChartData(sortedData);
+    } catch (err) {
+      console.error("Failed to fetch mood aggregation data", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMoodAggregation(range, selectedDate);
+  }, [selectedDate, range]);
+
   const handleRangeChange = (event, newRange) => {
     if (newRange !== null) {
       setRange(newRange);
-      setChartData(getChartData(newRange, selectedDate));
     }
   };
 
   const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
-    setChartData(getChartData(range, newDate));
   };
 
   const { averageMood, highestMood, lowestMood } =
@@ -323,8 +158,8 @@ export default function Trends() {
                 onChange={handleRangeChange}
                 fullWidth
               >
-                <ToggleButton value="week">Week</ToggleButton>
-                <ToggleButton value="month">Month</ToggleButton>
+                <ToggleButton value={7}>Week</ToggleButton>
+                <ToggleButton value={30}>Month</ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Stack>
@@ -352,12 +187,6 @@ export default function Trends() {
                   label: "Mood",
                 },
               ]}
-              tooltip={{
-                formatter: ({ dataIndex }) => {
-                  const entry = chartData[dataIndex];
-                  return `${entry.emotion}: ${entry.note}`;
-                },
-              }}
               width={400}
               height={300}
             />
@@ -392,7 +221,9 @@ export default function Trends() {
                 Highest & Lowest
               </Typography>
               <Typography variant="h6">
-                {highestMood} / {lowestMood}
+                {!isFinite(highestMood) || !isFinite(lowestMood)
+                  ? "-"
+                  : `${highestMood} / ${lowestMood}`}
               </Typography>
             </Paper>
           </Stack>
