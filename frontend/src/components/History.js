@@ -17,6 +17,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isSameDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import PropTypes from "prop-types";
+import Layout from "./Layout";
 
 const mockData = [
   {
@@ -38,7 +39,18 @@ function ServerDay(props) {
     <Badge
       key={day.toString()}
       overlap="circular"
-      badgeContent={isSelected ? "🟢" : undefined}
+      badgeContent={
+        isSelected ? (
+          <Box
+            sx={{
+              width: 10,
+              height: 10,
+              bgcolor: "green",
+              borderRadius: "50%",
+            }}
+          />
+        ) : undefined
+      }
     >
       <PickersDay
         {...other}
@@ -63,95 +75,106 @@ export default function History() {
   const highlightedDays = mockData.map((e) => new Date(e.date));
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h6" align="center" mb={2}>
-        History
-      </Typography>
+    <Layout>
+      <Box sx={{ p: 2 }}>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          fontSize={28}
+          align="center"
+          mb={2}
+        >
+          History
+        </Typography>
 
-      {/* Centered and Moderately Sized Card */}
-      <Card
-        variant="outlined"
-        sx={{
-          maxWidth: 800,
-          width: "100%",
-          mx: "auto",
-          borderRadius: 4,
-          mb: 2,
-        }}
-      >
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
-          <DateCalendar
-            value={selectedDate}
-            onChange={(newValue) => setSelectedDate(newValue)}
-            slots={{ day: ServerDay }}
-            slotProps={{ day: { highlightedDays } }}
-            sx={{
-              fontSize: "1.2rem", // Reduced font size of the calendar text
-              height: "400px", // Reduced calendar height
-              "& .MuiPickersDay-root": {
-                fontSize: "1.2rem", // Reduced font size for the days
-              },
-              "& .MuiTypography-root": {
-                fontSize: "1.2rem", // Reduced font size for date labels
-              },
-            }}
-          />
-        </LocalizationProvider>
-      </Card>
-
-      {/* Display Record Content in a Card */}
-      <Card
-        variant="outlined"
-        sx={{ maxWidth: 800, width: "100%", mx: "auto", borderRadius: 4 }}
-      >
-        <CardContent>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
+        {/* Centered and Moderately Sized Card */}
+        <Card
+          variant="outlined"
+          sx={{
+            maxWidth: 800,
+            width: "100%",
+            mx: "auto",
+            borderRadius: 4,
+            mb: 2,
+          }}
+        >
+          <LocalizationProvider
+            dateAdapter={AdapterDateFns}
+            adapterLocale={enUS}
           >
-            <Typography variant="subtitle2" color="text.secondary">
-              {format(selectedDate, "yyyy/MM/dd", {
-                locale: enUS,
-              })}
-            </Typography>
-          </Stack>
+            <DateCalendar
+              value={selectedDate}
+              onChange={(newValue) => setSelectedDate(newValue)}
+              slots={{ day: ServerDay }}
+              slotProps={{ day: { highlightedDays } }}
+              sx={{
+                fontSize: "1.2rem", // Reduced font size of the calendar text
+                height: "400px", // Reduced calendar height
+                "& .MuiPickersDay-root": {
+                  fontSize: "1.2rem", // Reduced font size for the days
+                },
+                "& .MuiTypography-root": {
+                  fontSize: "1.2rem", // Reduced font size for date labels
+                },
+              }}
+            />
+          </LocalizationProvider>
+        </Card>
 
-          <Divider sx={{ my: 2 }} />
+        {/* Display Record Content in a Card */}
+        <Card
+          variant="outlined"
+          sx={{ maxWidth: 800, width: "100%", mx: "auto", borderRadius: 4 }}
+        >
+          <CardContent>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="subtitle2" color="text.secondary">
+                {format(selectedDate, "yyyy/MM/dd", {
+                  locale: enUS,
+                })}
+              </Typography>
+            </Stack>
 
-          {entry ? (
-            <>
-              <Stack direction="row" spacing={2} mb={2}>
-                <Chip label="Mood" color="success" size="small" />
-                <Typography variant="h6">{entry.mood}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={2} mb={2}>
-                <Chip label="Emotion" color="success" size="small" />
-                <Typography variant="h6">{entry.emotion}</Typography>
-              </Stack>
-              <TextField
-                label="Note"
-                value={entry.note}
-                multiline
-                fullWidth
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="AI Suggestion"
-                value={`Consider maintaining this energy by planning something enjoyable mid-week.`}
-                multiline
-                fullWidth
-                InputProps={{ readOnly: true }}
-                sx={{ mt: 2 }}
-              />
-            </>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No records for this day
-            </Typography>
-          )}
-        </CardContent>
-      </Card>
-    </Box>
+            <Divider sx={{ my: 2 }} />
+
+            {entry ? (
+              <>
+                <Stack direction="row" spacing={2} mb={2}>
+                  <Chip label="Mood" color="success" size="small" />
+                  <Typography variant="h6">{entry.mood}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={2} mb={2}>
+                  <Chip label="Emotion" color="success" size="small" />
+                  <Typography variant="h6">{entry.emotion}</Typography>
+                </Stack>
+                <TextField
+                  label="Note"
+                  value={entry.note}
+                  multiline
+                  fullWidth
+                  InputProps={{ readOnly: true }}
+                />
+                <TextField
+                  label="AI Suggestion"
+                  value={`Consider maintaining this energy by planning something enjoyable mid-week.`}
+                  multiline
+                  fullWidth
+                  InputProps={{ readOnly: true }}
+                  sx={{ mt: 2 }}
+                />
+              </>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No records for this day
+              </Typography>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
+    </Layout>
   );
 }

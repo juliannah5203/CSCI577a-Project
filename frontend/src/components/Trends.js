@@ -14,6 +14,7 @@ import { format, parseISO } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import Layout from "./Layout";
 
 const fullMoodData = [
   {
@@ -280,128 +281,136 @@ export default function Trends() {
   const displayAverageMood = formatValue(averageMood);
 
   return (
-    <Box
-      sx={{
-        p: 3,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+    <Layout>
+      <Box
+        sx={{
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
 
-        minHeight: "100vh",
-      }}
-    >
-      <Typography variant="h6" gutterBottom>
-        Trend Analysis
-      </Typography>
-
-      <Box sx={{ width: "100%", maxWidth: 600 }}>
-        <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
-          <Box sx={{ flex: 1 }}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Select Date (End Date)"
-                value={selectedDate}
-                onChange={handleDateChange}
-                format="yyyy/MM/dd"
-                fullWidth
-              />
-            </LocalizationProvider>
-          </Box>
-
-          <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-            <ToggleButtonGroup
-              value={range}
-              exclusive
-              onChange={handleRangeChange}
-              fullWidth
-            >
-              <ToggleButton value="week">Week</ToggleButton>
-              <ToggleButton value="month">Month</ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-        </Stack>
-
-        <Card
-          variant="outlined"
-          sx={{
-            mb: 3,
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
+          minHeight: "100vh",
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          fontSize={28}
+          align="center"
+          mb={2}
         >
-          <LineChart
-            xAxis={[
-              {
-                scaleType: "point",
-                data: chartData.map((d) => format(parseISO(d.date), "MM/dd")),
-              },
-            ]}
-            series={[
-              {
-                data: chartData.map((d) => d.mood),
-                label: "Mood",
-              },
-            ]}
-            tooltip={{
-              formatter: ({ dataIndex }) => {
-                const entry = chartData[dataIndex];
-                return `${entry.emotion}: ${entry.note}`;
-              },
-            }}
-            width={450}
-            height={300}
-          />
-        </Card>
+          Trend Analysis
+        </Typography>
 
-        <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Daily Rate
-            </Typography>
-            <Typography variant="h6">{displayAverageDailyRate}</Typography>
-          </Paper>
+        <Box sx={{ width: "100%", maxWidth: 600 }}>
+          <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
+            <Box sx={{ flex: 1 }}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Select Date (End Date)"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  format="yyyy/MM/dd"
+                  fullWidth
+                />
+              </LocalizationProvider>
+            </Box>
 
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Trend Change
-            </Typography>
-            <Typography variant="h6">{displayTrendChange}</Typography>
-          </Paper>
-        </Stack>
+            <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+              <ToggleButtonGroup
+                value={range}
+                exclusive
+                onChange={handleRangeChange}
+                fullWidth
+              >
+                <ToggleButton value="week">Week</ToggleButton>
+                <ToggleButton value="month">Month</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </Stack>
 
-        <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Average Mood
-            </Typography>
-            <Typography variant="h6">{displayAverageMood}</Typography>
-          </Paper>
-
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Highest & Lowest
-            </Typography>
-            <Typography variant="h6">
-              {highestMood} / {lowestMood}
-            </Typography>
-          </Paper>
-        </Stack>
-
-        <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-          <Paper
+          <Card
             variant="outlined"
-            sx={{ p: 2, borderRadius: 2, width: "100%", maxWidth: 600 }}
+            sx={{
+              mb: 3,
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <Typography variant="subtitle1" gutterBottom>
-              AI Suggestions
-            </Typography>
-            <Divider sx={{ mb: 1 }} />
-            <Typography variant="body1">{feedback}</Typography>
-          </Paper>
-        </Stack>
+            <LineChart
+              xAxis={[
+                {
+                  scaleType: "point",
+                  data: chartData.map((d) => format(parseISO(d.date), "MM/dd")),
+                },
+              ]}
+              series={[
+                {
+                  data: chartData.map((d) => d.mood),
+                  label: "Mood",
+                },
+              ]}
+              tooltip={{
+                formatter: ({ dataIndex }) => {
+                  const entry = chartData[dataIndex];
+                  return `${entry.emotion}: ${entry.note}`;
+                },
+              }}
+              width={400}
+              height={300}
+            />
+          </Card>
+
+          <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Daily Rate
+              </Typography>
+              <Typography variant="h6">{displayAverageDailyRate}</Typography>
+            </Paper>
+
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Trend Change
+              </Typography>
+              <Typography variant="h6">{displayTrendChange}</Typography>
+            </Paper>
+          </Stack>
+
+          <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Average Mood
+              </Typography>
+              <Typography variant="h6">{displayAverageMood}</Typography>
+            </Paper>
+
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Highest & Lowest
+              </Typography>
+              <Typography variant="h6">
+                {highestMood} / {lowestMood}
+              </Typography>
+            </Paper>
+          </Stack>
+
+          <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+            <Paper
+              variant="outlined"
+              sx={{ p: 2, borderRadius: 2, width: "100%", maxWidth: 600 }}
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                AI Suggestions
+              </Typography>
+              <Divider sx={{ mb: 1 }} />
+              <Typography variant="body1">{feedback}</Typography>
+            </Paper>
+          </Stack>
+        </Box>
       </Box>
-    </Box>
+    </Layout>
   );
 }
