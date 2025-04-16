@@ -1,4 +1,5 @@
 const Answer = require('../models/Answer');
+const Suggestion = require('../models/Suggestion');
 const mongoose = require('mongoose');
 
 // Helper function: get date range
@@ -28,11 +29,16 @@ exports.getMoodTrends = async (req, res) => {
     const answers = await Answer.find({
       user_id: userId,
       date: { $gte: startDate, $lte: endDate }
-    })
-      .sort({ date: 1 });
+    }).sort({ date: 1 });
+
+    // Fetch suggestions within the same date range
+    const suggestions = await Suggestion.find({
+      user_id: userId,
+      date: { $gte: startDate, $lte: endDate }
+    }).sort({ date: 1 });
     
     // Process answers to create trend data
-    const trendData = processMoodTrends(answers);
+    const trendData = processMoodTrendsWithSuggestions(answers, suggestions);
     
     res.json({
       userId,
@@ -48,29 +54,49 @@ exports.getMoodTrends = async (req, res) => {
   }
 };
 
-// Process raw answer data into mood trend format
-function processMoodTrends(answers) {
+// Process raw answer data and suggestions into mood trend format
+function processMoodTrendsWithSuggestions(answers, suggestions) {
   const trendData = [];
 
-  // Group answers by date
-  const answersByDate = {};
+  // Group data by date
+  const dataByDate = {};
   
   answers.forEach(answer => {
     // Format date as YYYY-MM-DD to use as key
     const dateKey = answer.date.toISOString().split('T')[0];
     
-    if (!answersByDate[dateKey]) {
-      answersByDate[dateKey] = [];
+    if (!dataByDate[dateKey]) {
+      dataByDate[dateKey] = {
+        answers: [],
+        suggestions: []
+      };
     }
     
-    answersByDate[dateKey].push(answer);
+    dataByDate[dateKey].answers.push(answer);
   });
 
-  // Process each day's answers
-  Object.keys(answersByDate).sort().forEach(dateKey => {
-    const dayAnswers = answersByDate[dateKey];
+  // Process suggestions
+  suggestions.forEach(suggestion => {
+    // Format date as YYYY-MM-DD to use as key
+    const dateKey = suggestion.date.toISOString().split('T')[0];
     
-    // Calculate aggregated scores for this day
+    if (!dataByDate[dateKey]) {
+      dataByDate[dateKey] = {
+        answers: [],
+        suggestions: []
+      };
+    }
+
+    dataByDate[dateKey].suggestions.push(suggestion);
+  });
+
+  // Process each day's data
+  Object.keys(dataByDate).sort().forEach(dateKey => {
+    const dayData = dataByDate[dateKey];
+    const dayAnswers = dayData.answers;
+    const daySuggestions = dayData.suggestions;
+    
+    // Calculate average mood rating for this day
     const allScores = dayAnswers.map(answer => answer.moodRating);
     const averageScore = allScores.length > 0 
       ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length
@@ -78,6 +104,12 @@ function processMoodTrends(answers) {
      
     // Extract user notes
     const notes = dayAnswers.map(answer => answer.note).filter(Boolean);
+
+    // Format suggestions
+    const formattedSuggestions = daySuggestions.map(suggestion => ({
+      time: suggestion.date.toISOString(),
+      content: suggestion.content
+    }));
     
     trendData.push({
       date: dateKey,
@@ -88,7 +120,9 @@ function processMoodTrends(answers) {
         time: answer.date.toISOString(),
         moodRating: answer.moodRating,
         note: answer.note || ''
-      }))
+      })),
+      // Include suggestions for the day
+      suggestions: formattedSuggestions
     });
   });
 
@@ -143,12 +177,42 @@ exports.getMoodAggregation = async (req, res) => {
       }
     ]);
 
+    // Get suggestions for the same date range
+    const suggestions = await Suggestion.find({
+      user_id: userId,
+      date: { $gte: startDate, $lte: endDate }
+    }).sort({ date: 1 });
+
+    // Group suggestions by date
+    const suggestionsByDate = {};
+    suggestions.forEach(suggestion => {
+      const dateKey = suggestion.date.toISOString().split('T')[0];
+      if (!suggestionsByDate[dateKey]) {
+        suggestionsByDate[dateKey] = [];
+      }
+      suggestionsByDate[dateKey].push({
+        id: suggestion._id,
+        content: suggestion.content,
+        time: suggestion.date.toISOString()
+      });
+    });
+
+    // Merge suggestions into the aggregated data
+    const enrichedData = aggregatedData.map(day => {
+      return {
+        ...day,
+        suggestions: suggestionsByDate[day.date] || []
+      };
+    });
+
     // Calculate overall statistics
-    const allScores = aggregatedData.filter(day => day.averageScore !== null).map(day => day.averageScore);
+    const allScores = enrichedData.filter(day => day.averageScore !== null).map(day => day.averageScore);
     
     const stats = {
-      daysWithData: aggregatedData.length,
-      daysWithNotes: aggregatedData.reduce((sum, day) => sum + (day.hasNotes > 0 ? 1 : 0), 0),
+      daysWithData: enrichedData.length,
+      daysWithNotes: enrichedData.reduce((sum, day) => sum + (day.hasNotes > 0 ? 1 : 0), 0),
+      daysWithSuggestions: Object.keys(suggestionsByDate).length,
+      //totalSuggestions: suggestions.length,
       overallAverage: allScores.length > 0 
         ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length
         : null,
@@ -161,7 +225,7 @@ exports.getMoodAggregation = async (req, res) => {
       startDate,
       endDate,
       stats,
-      dailyData: aggregatedData
+      dailyData: enrichedData
     });
   } catch (err) {
     console.error('Error retrieving mood aggregation:', err);
