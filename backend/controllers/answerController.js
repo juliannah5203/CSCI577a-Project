@@ -8,7 +8,7 @@ const Suggestion = require('../models/Suggestion');
 exports.createAnswer = async (req, res) => {
   try {
 
-    const userId = req.user.userId; //req.user.id; // req.session.user && req.session.user.id;
+    const userId = req.user.userId; 
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }

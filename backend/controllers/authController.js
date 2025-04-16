@@ -115,8 +115,6 @@ exports.findOrCreateGoogleUser = async (profile) => {
       });
       
       await user.save();
-
-      user = await User.findOne({ google_id: profile.id });
       
       // Create default settings for new user
       const setting = new Setting({

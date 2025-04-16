@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  user_id: mongoose.Schema.Types.ObjectId,
+  // user_id: mongoose.Schema.Types.ObjectId,
   google_id: { type: String, sparse: true },
   username: { type: String, required: true, default: 'momo'},
   number: { type: String, default: '123456789'},
