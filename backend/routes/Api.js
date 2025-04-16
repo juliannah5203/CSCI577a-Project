@@ -35,8 +35,8 @@ const checkAlertMiddleware = require('../middlewares/checkAlertMiddleware');
  */
 router.get("", async (req, res) => { res.status(200).json("Hello World!"); });
 
-
-// router.get("/t", async (req, res) => { try {console.log("req.user ", typeof(req.user.id), " req.session.user ", typeof(req.session.user));res.status(200).json("Hello World!");} catch (err){res.status(200).json("error");} });
+// for test
+// router.get("/t", isAuthenticated, async (req, res) => { try {console.log("req.user ", req.user, req.user.userId); res.status(200).json("Hello World!");} catch (err){res.status(200).json("error");} });
 
 
 /**

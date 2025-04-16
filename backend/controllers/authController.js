@@ -115,6 +115,8 @@ exports.findOrCreateGoogleUser = async (profile) => {
       });
       
       await user.save();
+
+      user = await User.findOne({ google_id: profile.id });
       
       // Create default settings for new user
       const setting = new Setting({
@@ -124,9 +126,9 @@ exports.findOrCreateGoogleUser = async (profile) => {
       });
       
       await setting.save();
-      console.log(`Created new user with Google ID: ${profile.id}`);
+      console.log(`Created new user with Google ID: ${profile.id}, MongoDB ID: ${user._id}`);
     } else {
-      console.log(`Found existing user with Google ID: ${profile.id}`);
+      console.log(`Found existing user with Google ID: ${profile.id}, MongoDB ID: ${user._id}`);
     }
     
     return user;
