@@ -77,7 +77,7 @@ function processMoodTrends(answers) {
       : null;
      
     // Extract user notes
-    const notes = dayAnswers.map(answer => answer.notes).filter(Boolean);
+    const notes = dayAnswers.map(answer => answer.note).filter(Boolean);
     
     trendData.push({
       date: dateKey,
