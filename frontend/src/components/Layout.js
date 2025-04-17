@@ -27,6 +27,7 @@ const NavigationMenu = () => {
     setAnchorEl(null);
   };
   const menuItems = [
+
     { label: 'Dashboard', route: '/dashboard' },
     { label: 'Check-in History', route: '/history' },
     { label: 'Mood Trends', route: '/mood' },
@@ -134,7 +135,7 @@ const HeaderSection = () => {
       {/* translucent full-width overlay */}
       <Box
         sx={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           width: '100vw',
           height: '100%',
@@ -145,7 +146,7 @@ const HeaderSection = () => {
       {/* header content */}
       <Box
         sx={{
-          position: 'relative',
+          position: "relative",
           zIndex: 1,
           px: { xs: 3, md: 5 },
           py: 1.75,
@@ -172,6 +173,7 @@ const HeaderSection = () => {
             </Typography>
           )}
         </Box>
+
 
         {/* Right: user info + avatar */}
         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1.5 }}>
@@ -202,11 +204,11 @@ const HeaderSection = () => {
             </Typography> */}
           </Box>
           <Avatar
-            onClick={() => navigate('/userprofile')}
+            onClick={() => navigate("/userprofile")}
             sx={{
-              cursor: 'pointer',
-              bgcolor: 'transparent',
-              border: '2px solid black',
+              cursor: "pointer",
+              bgcolor: "transparent",
+              border: "2px solid black",
               width: 48,
               height: 48,
               background: 'conic-gradient(red, yellow, green, red)',

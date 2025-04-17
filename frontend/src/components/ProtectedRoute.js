@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    axios.get('/auth/current_user', { withCredentials: true })
+    axios.get('http://localhost:5001/auth/current_user', { withCredentials: true })
       .then((res) => {
         if (res.data && res.data.id) {
           setAuthenticated(true);
