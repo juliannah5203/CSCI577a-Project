@@ -462,9 +462,17 @@ router.put('/api/questionnaires/:id', isAuthenticated, questionnaireController.u
 router.delete('/api/questionnaires/:id', isAuthenticated, questionnaireController.deleteQuestionnaire);
 
 // moodTrend routes
-router.get('/api/mood-trends/:userId', isAuthenticated, cacheMiddleware.checkTrendCache, moodTrendController.getMoodTrends);
-router.get('/api/mood-aggregation/:userId', isAuthenticated, cacheMiddleware.checkTrendCache, moodTrendController.getMoodAggregation);
+router.get('/api/users/:userId/mood-trends', 
+  isAuthenticated,
+  cacheMiddleware.checkTrendCache,
+  moodTrendController.getMoodTrends
+);
 
+router.get('/api/users/:userId/mood-aggregation',
+  isAuthenticated,
+  cacheMiddleware.checkTrendCache,
+  moodTrendController.getMoodAggregation
+);
 // router.get("", async (req, res) => {res.status(200).json("Hello World!")})
 // router.get("/api", async (req, res) => {res.status(200).json("Hello World!")})
 
