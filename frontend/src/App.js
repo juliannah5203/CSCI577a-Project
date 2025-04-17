@@ -10,9 +10,12 @@ import CheckIn from "./components/CheckIn";
 import MoodTrends from "./components/MoodTrends";
 // import AIInsights from "./components/AIInsights"; // Uncomment if used
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useStoreUserCookie } from './hooks/useCurrentUser';
 import { SnackbarProvider } from "./context/SnackbarContext";
 
 function AppWrapper() {
+  useStoreUserCookie();
+  
   return (
     <SnackbarProvider>
       <Router>
