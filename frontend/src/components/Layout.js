@@ -27,6 +27,7 @@ const NavigationMenu = () => {
 
   const menuItems = [
     { label: "Dashboard", route: "/dashboard" },
+    { label: "Check In", route: "/checkin" },
     { label: "History", route: "/history" },
     { label: "Trends", route: "/trends" },
     // { label: "AI Insights", route: "/ai" },

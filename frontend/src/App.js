@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignInPage from "./components/SignInPage";
 import Dashboard from "./components/Dashboard";
 import UserProfile from "./components/UserProfile";
-// import AIInsights from "./components/AIInsights";
 import Trends from "./components/Trends";
 import History from "./components/History";
 import Settings from "./components/Settings";
 import CheckIn from "./components/CheckIn";
 import ProtectedRoute from "./components/ProtectedRoute";
-function App() {
+import { SnackbarProvider } from "./context/SnackbarContext";
+import { setSnackbarHandler } from "./utils/axiosInstance";
+import { useSnackbar } from "./context/SnackbarContext";
+
+
+
+function AppWrapper() {
+  return (
+    <SnackbarProvider>
+      <Router>
+        <App />
+      </Router>
+    </SnackbarProvider>
+
   return (
     <Router>
       <Routes>
@@ -27,4 +39,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppWrapper;

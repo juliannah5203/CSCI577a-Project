@@ -17,7 +17,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isSameDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import PropTypes from "prop-types";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import Layout from "./Layout";
 
 const moodMap = {
@@ -66,22 +66,28 @@ export default function History() {
 
   const fetchMoodData = async (startDate) => {
     try {
-      console.log("Fetching mood data for date:", startDate);
-      const formattedDate = format(startDate, "yyyy-MM-dd");
-      const res = await axios.get(
-        `http://localhost:5001/users/${userId}/mood-trends/?startDate=${formattedDate}&range=30`,
+      const firstDay = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        1
+      );
+      const formattedDate = format(firstDay, "yyyy-MM-dd");
+      const res = await axiosInstance.get(
+        `http://localhost:5001/api/users/${userId}/mood-trends/?startDate=${formattedDate}&range=31`,
         {
           withCredentials: true,
         }
       );
-      console.log("Fetched mood trends:", res.data);
-      const flattened = res.data.data.flatMap((day) =>
-        day.moodEntries.map((entry) => ({
-          date: entry.time.split("T")[0],
-          mood: entry.moodRating,
-          note: entry.note,
-        }))
-      );
+      const flattened =
+        res.data.data?.map((entry) => ({
+          date: entry.moodEntries[0].time,
+          mood: entry.averageScore,
+          note: entry.notes?.[0] || "-",
+          suggestions: entry.suggestions?.[0]?.content
+            ? entry.suggestions[0].content.trim()
+            : "",
+        })) || [];
+      console.log("Fetched mood data:", flattened);
       setMoodData(flattened);
     } catch (err) {
       console.error("Failed to fetch mood trends", err);
@@ -93,7 +99,6 @@ export default function History() {
   const highlightedDays = moodData.map((e) => new Date(e.date));
 
   useEffect(() => {
-    console.log("selectedDate:", selectedDate);
     if (selectedDate) {
       const currentMonth = selectedDate.getMonth();
       const currentYear = selectedDate.getFullYear();
@@ -131,21 +136,15 @@ export default function History() {
             mb: 2,
           }}
         >
-          <LocalizationProvider
-            dateAdapter={AdapterDateFns}
-            adapterLocale={enUS}
-          >
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateCalendar
               value={selectedDate}
               onChange={(newValue) => {
-                console.log("Date selected:", newValue);
                 setSelectedDate(newValue);
               }}
               onMonthChange={(date) => {
-                console.log("Month changed to:", date);
                 setSelectedDate(date);
               }}
-              onViewChange={(view) => console.log("View changed to:", view)}
               slots={{ day: ServerDay }}
               slotProps={{ day: { highlightedDays } }}
               sx={{
@@ -194,14 +193,16 @@ export default function History() {
                   <Chip label="Note" color="success" size="small" />
                   <Typography variant="h6">{entry.note}</Typography>
                 </Stack>
-                <TextField
-                  label="AI Suggestion"
-                  value={`Consider maintaining this energy by planning something enjoyable mid-week.`}
-                  multiline
-                  fullWidth
-                  InputProps={{ readOnly: true }}
-                  sx={{ mt: 2 }}
-                />
+                {entry.suggestions?.length > 0 && (
+                  <TextField
+                    label="AI Suggestion"
+                    value={entry.suggestions}
+                    multiline
+                    fullWidth
+                    InputProps={{ readOnly: true }}
+                    sx={{ mt: 2 }}
+                  />
+                )}
               </>
             ) : (
               <Typography variant="body2" color="text.secondary">
