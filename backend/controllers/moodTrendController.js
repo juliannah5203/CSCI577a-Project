@@ -20,15 +20,15 @@ const getDateRange = (days, startDateParam = null, endDateParam = null) => {
   return { startDate, endDate };
 };
 
-// Get mood trends for a specific time range (7 or 30 days)
+// Get mood trends for a specific time range (7 or 31 days)
 exports.getMoodTrends = async (req, res) => {
   try {
     const userId = req.params.userId;
     const range = parseInt(req.query.range) || 7; // Default 7 days, if not specified
     const startDate = req.query.startDate || null; // New parameter
     
-    if (range !== 7 && range !== 30) {
-      return res.status(400).json({ error: 'Time range must be either 7 or 30 days' });
+    if (range !== 7 && range !== 31) {
+      return res.status(400).json({ error: 'Time range must be either 7 or 31 days' });
     }
 
     const dateRange = getDateRange(range, startDate);
@@ -144,8 +144,8 @@ exports.getMoodAggregation = async (req, res) => {
     const range = parseInt(req.query.range) || 7; // Default to 7 days if not specified
     const endDate = req.query.endDate || null; // New parameter
     
-    if (range !== 7 && range !== 30) {
-      return res.status(400).json({ error: 'Range must be either 7 or 30 days' });
+    if (range !== 7 && range !== 31) {
+      return res.status(400).json({ error: 'Range must be either 7 or 31 days' });
     }
 
     const dateRange = getDateRange(range, null, endDate);
