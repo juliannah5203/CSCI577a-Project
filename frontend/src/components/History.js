@@ -17,7 +17,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { format, isSameDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import PropTypes from "prop-types";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import Layout from "./Layout";
 
 const moodMap = {
@@ -72,7 +72,7 @@ export default function History() {
         1
       );
       const formattedDate = format(firstDay, "yyyy-MM-dd");
-      const res = await axios.get(
+      const res = await axiosInstance.get(
         `http://localhost:5001/api/users/${userId}/mood-trends/?startDate=${formattedDate}&range=31`,
         {
           withCredentials: true,

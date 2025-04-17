@@ -33,7 +33,6 @@ exports.getUserById = async (req, res) => {
 
     const setting = await Setting.findOne({ user_id: user._id });
     const answers = await Answer.find({ user_id: user._id })
-      .populate('questionnaire_id', 'diseases questions');
     const suggestions = await Suggestion.find({ user_id: user._id });
 
     res.json({ user, setting, answers, suggestions });

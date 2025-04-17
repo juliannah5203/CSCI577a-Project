@@ -1,6 +1,25 @@
-// frontend/src/components/UserProfile.js
 import React, { useEffect, useState } from 'react';
+// import React, {useState } from 'react';
+
 import axios from 'axios';
+// import PropTypes from 'prop-types';
+import {
+  Box,
+  Typography,
+//   Avatar,
+//   Menu,
+//   MenuItem,
+//   IconButton,
+} from '@mui/material';
+// import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
+import Layout from './Layout';
+
+
+
+// HeaderSection.propTypes = {
+//   username: PropTypes.string
+// };
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({
@@ -10,13 +29,13 @@ const UserProfile = () => {
     sex: '',
     profilePicture: '',
   });
-
   const [originalProfile, setOriginalProfile] = useState(null);
   const [editing, setEditing] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch user profile
   useEffect(() => {
-    axios.get('/api/users/profile', { withCredentials: true })
+    axios.get('http://localhost:5001/api/users/profile', { withCredentials: true })
       .then(res => {
         const data = res.data;
         const newProfile = {
@@ -24,28 +43,36 @@ const UserProfile = () => {
           email: data.email || '',
           region: data.region || '',
           sex: data.sex || '',
-          profilePicture: data.profilePicture || '',
+          // profilePicture: data.profilePicture || '',
         };
         setProfile(newProfile);
         setOriginalProfile(newProfile);
       })
-      .catch(err => console.error('Failed to fetch profile:', err));
-  }, []);
+      .catch(err => {
+        console.error('Failed to fetch profile:', err);
+        // If profile fetching fails, redirect the user to the sign-in page.
+        navigate('/');
+      });
+  }, [navigate]);
 
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
+  // Toggle edit mode. Save a backup before editing.
   const handleEditToggle = () => {
-    if (!editing) setOriginalProfile(profile); // Save current state before editing
-    else setProfile(originalProfile); // Revert on cancel
+    if (!editing) {
+      setOriginalProfile(profile);
+    } else {
+      setProfile(originalProfile);
+    }
     setEditing(!editing);
   };
 
+  // Update the profile via a PUT request.
   const handleSave = () => {
     const { name, region, sex } = profile;
-
-    axios.put('/api/users/profile', { name, region, sex }, { withCredentials: true })
+    axios.put('http://localhost:5001/api/users/profile', { name, region, sex }, { withCredentials: true })
       .then(() => {
         setEditing(false);
       })
@@ -58,43 +85,76 @@ const UserProfile = () => {
   };
 
   return (
-    <div style={styles.profileCard}>
-      <div style={styles.avatarRow}>
-        <img src={profile.profilePicture || '/default-avatar.png'} alt="avatar" style={styles.avatar} />
-        <div style={{ flex: 1 }}>
-          <h2>{profile.name}</h2>
+
+    <Layout>
+
+      <div style={styles.profileCard}>
+        <div style={styles.avatarRow}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h5">{profile.name}</Typography>
+          </Box>
+          <button onClick={handleEditToggle} style={styles.editBtn}>
+            {editing ? 'Cancel' : 'Edit'}
+          </button>
         </div>
-        <button onClick={handleEditToggle} style={styles.editBtn}>
-          {editing ? 'Cancel' : 'Edit'}
-        </button>
+        
+        <Box sx={styles.infoRow}>
+          <strong>Name:</strong>
+          {editing ? (
+            <input
+              name="name"
+              value={profile.name}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          ) : (
+            profile.name
+          )}
+        </Box>
+        <Box sx={styles.infoRow}>
+          <strong>Email:</strong> {profile.email}
+        </Box>
+        <Box sx={styles.infoRow}>
+          <strong>Gender:</strong>
+          {editing ? (
+            <select
+              name="sex"
+              value={profile.sex}
+              onChange={handleChange}
+              style={styles.input}
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          ) : (
+            profile.sex
+          )}
+        </Box>
+        <Box sx={styles.infoRow}>
+          <strong>Region:</strong>
+          {editing ? (
+            <input
+              name="region"
+              value={profile.region}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          ) : (
+            profile.region
+          )}
+        </Box>
+        {editing && (
+          <Box sx={{ textAlign: 'right', mt: 2 }}>
+            <button onClick={handleSave} style={styles.saveBtn}>
+              Save
+            </button>
+          </Box>
+        )}
+       
       </div>
 
-      <div style={styles.infoRow}><strong>Name:</strong>
-        {editing ? <input name="name" value={profile.name} onChange={handleChange} style={styles.input} /> : profile.name}
-      </div>
-
-      <div style={styles.infoRow}><strong>Email:</strong> {profile.email}</div>
-
-      <div style={styles.infoRow}><strong>Sex:</strong>
-        {editing ? (
-          <select name="sex" value={profile.sex} onChange={handleChange} style={styles.input}>
-            <option value="">Select</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        ) : profile.sex}
-      </div>
-
-      <div style={styles.infoRow}><strong>Region:</strong>
-        {editing ? <input name="region" value={profile.region} onChange={handleChange} style={styles.input} /> : profile.region}
-      </div>
-
-      {editing && (
-        <div style={{ textAlign: 'right' }}>
-          <button onClick={handleSave} style={styles.saveBtn}>Save</button>
-        </div>
-      )}
-    </div>
+    </Layout>
   );
 };
 
@@ -133,7 +193,6 @@ const styles = {
     border: 'none',
     padding: '10px 20px',
     borderRadius: '6px',
-    marginTop: '1rem',
     cursor: 'pointer',
   },
   infoRow: {
@@ -151,7 +210,7 @@ const styles = {
     padding: '8px',
     borderRadius: '6px',
     border: '1px solid #ccc',
-  }
+  },
 };
 
 export default UserProfile;

@@ -7,7 +7,22 @@ const suggestionController = require('../controllers/suggestionController');
 const questionnaireController = require('../controllers/questionnaireController');
 const authController = require('../controllers/authController');
 const { isAuthenticated } = require('../middlewares/authMiddleware');
+// added
+const moodTrendController = require('../controllers/moodTrendController');
+const cacheMiddleware = require('../middlewares/cacheMiddleware');
+const checkAlertMiddleware = require('../middlewares/checkAlertMiddleware');
 
+
+
+
+
+// app.post('/login', authMiddleware, checkLastCheckin, (req, res) => {
+//   res.json({
+//     token: 'xxx',
+//     user: req.user,
+//     needsAlert: req.needsAlert
+//   });
+// });
 
 /**
  * @swagger
@@ -19,6 +34,10 @@ const { isAuthenticated } = require('../middlewares/authMiddleware');
  *         description: "A successful response with 'Hello World!' message."
  */
 router.get("", async (req, res) => { res.status(200).json("Hello World!"); });
+
+// for test
+// router.get("/t", isAuthenticated, async (req, res) => { try {console.log("req.user ", req.user, req.user.userId); res.status(200).json("Hello World!");} catch (err){res.status(200).json("error");} });
+
 
 /**
  * @swagger
@@ -43,6 +62,11 @@ router.get("/api", async (req, res) => { res.status(200).json("Hello World!"); }
  *         description: "Unauthorized access."
  */
 router.get('/api/users/profile', isAuthenticated, authController.getUserProfile);
+// router.get('/api/users/profile', authController.getUserProfile);
+// router.get('/api/users/profile', (req, res, next) => {
+//   console.log(`[${new Date().toISOString()}] API call: GET /api/users/profile`);
+//   next();
+// }, authController.getUserProfile);
 
 /**
  * @swagger
@@ -55,7 +79,12 @@ router.get('/api/users/profile', isAuthenticated, authController.getUserProfile)
  *       401:
  *         description: "Unauthorized access."
  */
-router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);  
+router.put('/api/users/profile', isAuthenticated, authController.updateUserProfile);
+// router.put('/api/users/profile', authController.updateUserProfile);  
+// router.put('/api/users/profile', (req, res, next) => {
+//   console.log(`[${new Date().toISOString()}] API call: PUT /api/users/profile`, req.body);
+//   next();
+// }, authController.updateUserProfile);  
 
 
 /**
@@ -160,7 +189,7 @@ router.delete('/api/users/:id', userController.deleteUser);
  *       400:
  *         description: "Invalid setting data."
  */
-router.post('/api/settings', settingController.createSetting);
+router.post('/api/settings', isAuthenticated, settingController.createSetting);
 
 /**
  * @swagger
@@ -176,7 +205,7 @@ router.post('/api/settings', settingController.createSetting);
  *       200:
  *         description: "Returns the user's settings."
  */
-router.get('/api/settings/:userId', settingController.getSettingByUserId);
+router.get('/api/settings/:userId', isAuthenticated, settingController.getSettingByUserId);
 
 /**
  * @swagger
@@ -192,7 +221,7 @@ router.get('/api/settings/:userId', settingController.getSettingByUserId);
  *       200:
  *         description: "Setting updated successfully."
  */
-router.put('/api/settings/:userId', settingController.updateSetting);
+router.put('/api/settings/:userId', isAuthenticated, settingController.updateSetting);
 
 /**
  * @swagger
@@ -208,11 +237,11 @@ router.put('/api/settings/:userId', settingController.updateSetting);
  *       200:
  *         description: "Setting deleted successfully."
  */
-router.delete('/api/settings/:userId', settingController.deleteSetting);
+router.delete('/api/settings/:userId', isAuthenticated, settingController.deleteSetting);
 
 /**
  * @swagger
- * /api/answers:
+ * /api/checkins:
  *   post:
  *     description: "Creates a new answer."
  *     responses:
@@ -221,11 +250,17 @@ router.delete('/api/settings/:userId', settingController.deleteSetting);
  *       400:
  *         description: "Invalid answer data."
  */
-router.post('/api/answers', answerController.createAnswer);
+router.post('/api/checkins', isAuthenticated, answerController.createAnswer);
+
+router.get('/api/alert', isAuthenticated, checkAlertMiddleware, (req, res) => {
+    res.json({
+        need_alert:  req.needsAlert
+    });
+});
 
 /**
  * @swagger
- * /api/answers/{userId}:
+ * /api/checkins/{userId}:
  *   get:
  *     description: "Fetches answers by user ID."
  *     parameters:
@@ -237,7 +272,24 @@ router.post('/api/answers', answerController.createAnswer);
  *       200:
  *         description: "Returns the answers by user."
  */
-router.get('/api/answers/:userId', answerController.getAnswersByUserId);
+router.get('/api/checkins/:userId', isAuthenticated, answerController.getAnswersByUserId);
+
+/**
+ * @swagger
+ * /api/checkins/{Id}:
+ *   get:
+ *     description: "Fetches answers by ID."
+ *     parameters:
+ *       - name: Id
+ *         in: path
+ *         required: true
+ *         description: "Answer's unique identifier."
+ *     responses:
+ *       200:
+ *         description: "Returns the answers by id."
+ */
+router.get('/api/checkins/:ansId', isAuthenticated, answerController.getAnswersById);
+
 
 /**
  * @swagger
@@ -253,7 +305,7 @@ router.get('/api/answers/:userId', answerController.getAnswersByUserId);
  *       200:
  *         description: "Answer updated successfully."
  */
-router.put('/api/answers/:id', answerController.updateAnswer);
+router.put('/api/answers/:id', isAuthenticated, answerController.updateAnswer);
 
 /**
  * @swagger
@@ -269,7 +321,12 @@ router.put('/api/answers/:id', answerController.updateAnswer);
  *       200:
  *         description: "Answer deleted successfully."
  */
-router.delete('/api/answers/:id', answerController.deleteAnswer);
+router.delete('/api/answers/:id', isAuthenticated, answerController.deleteAnswer);
+
+
+router.post('/api/answers', isAuthenticated, answerController.createAnswer);
+
+
 
 /**
  * @swagger
@@ -282,7 +339,7 @@ router.delete('/api/answers/:id', answerController.deleteAnswer);
  *       400:
  *         description: "Invalid suggestion data."
  */
-router.post('/api/suggestions', suggestionController.createSuggestion);
+router.post('/api/suggestions', isAuthenticated, suggestionController.createSuggestion);
 
 /**
  * @swagger
@@ -298,7 +355,7 @@ router.post('/api/suggestions', suggestionController.createSuggestion);
  *       200:
  *         description: "Returns the suggestions by user."
  */
-router.get('/api/suggestions/:userId', suggestionController.getSuggestionsByUserId);
+router.get('/api/suggestions/:userId', isAuthenticated, suggestionController.getSuggestionsByUserId);
 
 /**
  * @swagger
@@ -314,7 +371,7 @@ router.get('/api/suggestions/:userId', suggestionController.getSuggestionsByUser
  *       200:
  *         description: "Suggestion updated successfully."
  */
-router.put('/api/suggestions/:id', suggestionController.updateSuggestion);
+router.put('/api/suggestions/:id', isAuthenticated, suggestionController.updateSuggestion);
 
 /**
  * @swagger
@@ -330,7 +387,7 @@ router.put('/api/suggestions/:id', suggestionController.updateSuggestion);
  *       200:
  *         description: "Suggestion deleted successfully."
  */
-router.delete('/api/suggestions/:id', suggestionController.deleteSuggestion);
+router.delete('/api/suggestions/:id', isAuthenticated, suggestionController.deleteSuggestion);
 
 /**
  * @swagger
@@ -343,7 +400,7 @@ router.delete('/api/suggestions/:id', suggestionController.deleteSuggestion);
  *       400:
  *         description: "Invalid questionnaire data."
  */
-router.post('/api/questionnaires', questionnaireController.createQuestionnaire);
+router.post('/api/questionnaires', isAuthenticated, questionnaireController.createQuestionnaire);
 
 /**
  * @swagger
@@ -354,7 +411,7 @@ router.post('/api/questionnaires', questionnaireController.createQuestionnaire);
  *       200:
  *         description: "Returns a list of questionnaires."
  */
-router.get('/api/questionnaires', questionnaireController.getAllQuestionnaires);
+router.get('/api/questionnaires', isAuthenticated, questionnaireController.getAllQuestionnaires);
 
 /**
  * @swagger
@@ -370,7 +427,7 @@ router.get('/api/questionnaires', questionnaireController.getAllQuestionnaires);
  *       200:
  *         description: "Returns the questionnaire by ID."
  */
-router.get('/api/questionnaires/:id', questionnaireController.getQuestionnaireById);
+router.get('/api/questionnaires/:id', isAuthenticated, questionnaireController.getQuestionnaireById);
 
 /**
  * @swagger
@@ -386,7 +443,7 @@ router.get('/api/questionnaires/:id', questionnaireController.getQuestionnaireBy
  *       200:
  *         description: "Questionnaire updated successfully."
  */
-router.put('/api/questionnaires/:id', questionnaireController.updateQuestionnaire);
+router.put('/api/questionnaires/:id', isAuthenticated, questionnaireController.updateQuestionnaire);
 
 /**
  * @swagger
@@ -402,11 +459,20 @@ router.put('/api/questionnaires/:id', questionnaireController.updateQuestionnair
  *       200:
  *         description: "Questionnaire deleted successfully."
  */
-router.delete('/api/questionnaires/:id', questionnaireController.deleteQuestionnaire);
+router.delete('/api/questionnaires/:id', isAuthenticated, questionnaireController.deleteQuestionnaire);
 
+// moodTrend routes
+router.get('/api/users/:userId/mood-trends', 
+  isAuthenticated,
+  cacheMiddleware.checkTrendCache,
+  moodTrendController.getMoodTrends
+);
 
-
-
+router.get('/api/users/:userId/mood-aggregation',
+  isAuthenticated,
+  cacheMiddleware.checkTrendCache,
+  moodTrendController.getMoodAggregation
+);
 // router.get("", async (req, res) => {res.status(200).json("Hello World!")})
 // router.get("/api", async (req, res) => {res.status(200).json("Hello World!")})
 
@@ -427,7 +493,6 @@ router.delete('/api/questionnaires/:id', questionnaireController.deleteQuestionn
 // router.put('/api/settings/:userId', settingController.updateSetting);
 // router.delete('/api/settings/:userId', settingController.deleteSetting);
 
-// router.post('/api/answers', answerController.createAnswer);
 // router.get('/api/answers/:userId', answerController.getAnswersByUserId);
 // router.put('/api/answers/:id', answerController.updateAnswer);
 // router.delete('/api/answers/:id', answerController.deleteAnswer);

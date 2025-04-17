@@ -15,7 +15,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Layout from "./Layout";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
 const userId = "67ff8a8411c7fe597dcf6a92"; // Replace with dynamic user ID if available
 
@@ -68,12 +68,11 @@ export default function Trends() {
 
   const fetchMoodAggregation = async (rangeValue = 7, date = new Date()) => {
     try {
-      const res = await axios.get(
-        `http://localhost:5001/api/users/${userId}/mood-aggregation/?startDate=${format(
+      const res = await axiosInstance.get(
+        `/users/${userId}/mood-aggregation/?endDate=${format(
           date,
           "yyyy-MM-dd"
-        )}&range=${rangeValue}`,
-        { withCredentials: true }
+        )}&range=${rangeValue}`
       );
       console.log("Mood aggregation data:", res.data);
       const sortedData = res.data.dailyData
