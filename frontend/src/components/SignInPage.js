@@ -1,53 +1,45 @@
 // src/components/SignInPage.js
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-// import { useNavigate } from 'react-router-dom';
+import { Box, Typography, CssBaseline, Button } from '@mui/material';
 
 const HeaderSection = () => {
-  // const navigate = useNavigate();
-  
   return (
     <Box
       sx={{
         position: 'relative',
         mb: 4,
-        minHeight: '80px', // 固定头部高度
-        width: '100%',
+        boxShadow: '0px 2px 7px rgba(0, 0, 0, 0.20)',
+        transition: 'box-shadow 0.3s ease-in-out',
       }}
     >
-      {/* 透明覆盖层 */}
+      {/* Translucent full-width overlay */}
       <Box
         sx={{
           position: 'absolute',
           top: 0,
-          left: -35,
-          width: 'calc(100vw)',
+          width: '100vw',
           height: '100%',
-          backgroundColor: 'rgba(255, 255, 255, 0.4)',
-          borderRadius: 3,
+          backgroundColor: 'rgb(255, 255, 254)',
           zIndex: 0,
         }}
       />
-      {/* Header 内容：左侧放置 MindCare 文本，垂直居中 */}
+      {/* header content */}
       <Box
         sx={{
           position: 'relative',
           zIndex: 1,
-          px: 0.25,
+          px: { xs: 3, md: 5 },
           py: 2.5,
           display: 'flex',
-          justifyContent: 'flex-start',
           alignItems: 'center',
           width: '100%',
-          height: '100%',
         }}
       >
         <Typography
           variant="h4"
           fontWeight="bold"
-          fontSize={36}
-          // onClick={() => navigate('/dashboard')}
-          sx={{ cursor: 'pointer', textAlign: 'left' }}
+          fontSize={30}
+          sx={{ cursor: 'default' }}
         >
           MindCare
         </Typography>
@@ -58,53 +50,76 @@ const HeaderSection = () => {
 
 const SignInPage = () => {
   const handleSignIn = () => {
-    // 重定向到后端的 Google OAuth 端点
     window.location.href = 'http://localhost:5001/auth/google';
   };
 
-  const buttonStyle = {
-    backgroundColor: 'white',
-    color: 'black',
-    border: 'none',
-    padding: '12px 24px',
-    fontSize: '18px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  };
+  // const buttonStyle = {
+  //   backgroundColor: 'white',
+  //   color: 'black',
+  //   border: 'none',
+  //   padding: '12px 24px',
+  //   fontSize: '18px',
+  //   borderRadius: '4px',
+  //   cursor: 'pointer',
+  // };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: '#e6f4df', // 浅绿色背景
-        minHeight: '100vh',
-        position: 'relative',
-        pt: 0,
-        px: 3,
-        pb: 3,
-      }}
-    >
-      {/* 头部区域 */}
-      <HeaderSection />
-
-      {/* 中间区域：欢迎文字和登录按钮 */}
+    <>
+      <CssBaseline />
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: 'calc(100vh - 80px)', // 扣除 header 高度
-          textAlign: 'center',
+          backgroundColor: '#e6f4df',
+          minHeight: '100vh',
+          width: '100vw',
+          overflowX: 'hidden',
+          pt: 0,
+          pb: 3,
+          px: 0,
+          position: 'relative',
         }}
       >
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Welcome
-        </Typography>
-        <button style={buttonStyle} onClick={handleSignIn}>
-          Sign in with Google
-        </button>
+        <HeaderSection />
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            textAlign: 'center',
+            px: 3,
+          }}
+        >
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Welcome!
+          </Typography>
+          <Button
+            onClick={handleSignIn}
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              padding: '12px 24px',
+              fontSize: '18px',
+              borderRadius: '4',
+              cursor: 'pointer',
+              transition: 'box-shadow 0.3s ease',
+              boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.29)',
+              '&:hover': {
+                boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.46)',
+                backgroundColor: 'white',
+              },
+              textTransform: 'none',
+            }}
+          >
+            Sign in with Google
+          </Button>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 
