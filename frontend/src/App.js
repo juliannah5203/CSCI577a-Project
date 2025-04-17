@@ -12,33 +12,7 @@ import { SnackbarProvider } from "./context/SnackbarContext";
 import { setSnackbarHandler } from "./utils/axiosInstance";
 import { useSnackbar } from "./context/SnackbarContext";
 
-function App() {
-  const { showSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    setSnackbarHandler((message, severity) => {
-      showSnackbar(message, severity);
-    });
-  }, [showSnackbar]);
-
-  return (
-    <Routes>
-      <Route path="/" element={<SignInPage />} />
-      <Route path="/signin" element={<SignInPage />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/userprofile" element={<UserProfile />} />
-      <Route path="/checkin" element={<CheckIn />} />
-      <Route path="/profile" element={<UserProfile />} />
-      <Route path="/trends" element={<Trends />} />
-      <Route path="/history" element={<History />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route
-        path="/placeHolderRoute"
-        element={<ProtectedRoute></ProtectedRoute>}
-      />
-    </Routes>
-  );
-}
 
 function AppWrapper() {
   return (
@@ -47,6 +21,21 @@ function AppWrapper() {
         <App />
       </Router>
     </SnackbarProvider>
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<SignInPage />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/userprofile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+        <Route path="/checkin" element={<ProtectedRoute><CheckIn /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+        {/* <Route path="/ai" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} /> */}
+        <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      </Routes>
+    </Router>
   );
 }
 

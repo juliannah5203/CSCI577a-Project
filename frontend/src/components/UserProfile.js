@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from 'react';
-// import React, {useState } from 'react';
-
 import axios from 'axios';
-// import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
-//   Avatar,
-//   Menu,
-//   MenuItem,
-//   IconButton,
+  Button
 } from '@mui/material';
-// import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import Layout from './Layout';
-
-
-
-// HeaderSection.propTypes = {
-//   username: PropTypes.string
-// };
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({
@@ -84,10 +71,12 @@ const UserProfile = () => {
       });
   };
 
+  const handleLogout = () => {
+    window.location.href = 'http://localhost:5001/auth/logout';
+  };
+
   return (
-
     <Layout>
-
       <div style={styles.profileCard}>
         <div style={styles.avatarRow}>
           <Box sx={{ flex: 1 }}>
@@ -131,6 +120,7 @@ const UserProfile = () => {
             profile.sex
           )}
         </Box>
+
         <Box sx={styles.infoRow}>
           <strong>Region:</strong>
           {editing ? (
@@ -144,6 +134,7 @@ const UserProfile = () => {
             profile.region
           )}
         </Box>
+
         {editing && (
           <Box sx={{ textAlign: 'right', mt: 2 }}>
             <button onClick={handleSave} style={styles.saveBtn}>
@@ -152,8 +143,24 @@ const UserProfile = () => {
           </Box>
         )}
        
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Button 
+            variant="outlined" 
+            color="error" 
+            onClick={handleLogout}
+            sx={{
+              borderRadius: 2,
+              px: 4,
+              py: 1.5,
+              textTransform: 'uppercase',
+              fontWeight: 'bold',
+              '&:hover': { boxShadow: 4 }
+              }}
+          >
+            Logout
+          </Button>
+        </Box>
       </div>
-
     </Layout>
   );
 };
@@ -172,12 +179,6 @@ const styles = {
     alignItems: 'center',
     marginBottom: '1.5rem',
     gap: '1rem',
-  },
-  avatar: {
-    width: '64px',
-    height: '64px',
-    borderRadius: '50%',
-    objectFit: 'cover',
   },
   editBtn: {
     background: '#000',
