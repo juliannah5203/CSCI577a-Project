@@ -14,29 +14,14 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<SignInPage />} />
-        {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/userprofile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
         <Route path="/checkin" element={<ProtectedRoute><CheckIn /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-        <Route path="/ai" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
-        <Route path="/mood" element={<ProtectedRoute><MoodTrends /></ProtectedRoute>} />
-        <Route path="/history" element={<ProtectedRoute><CheckInHistory /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} /> */}
-
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/userprofile" element={<UserProfile />} />
-        <Route path="/checkin" element={<CheckIn />} />
-        <Route path="/profile" element={<UserProfile />} />
-        {/* <Route path="/ai" element={<AIInsights />} /> */}
-        <Route path="/trends" element={<Trends />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/settings" element={<Settings />} />
-
-        {/* Place holder route for protected routes. Delete this later*/}
-        <Route
-          path="/placeHolderRoute"
-          element={<ProtectedRoute></ProtectedRoute>}
-        />
+        {/* <Route path="/ai" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} /> */}
+        <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       </Routes>
     </Router>
   );
