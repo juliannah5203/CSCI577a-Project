@@ -39,7 +39,8 @@ exports.createAnswer = async (req, res) => {
     await suggestion.save();
     
     // console.log(ai_feedback)
-    res.status(201).json(answer);
+    //res.status(201).json(answer);
+    res.status(201).json({ai_feedback: ai_feedback});
   }catch (err){
     // console.log(err)
     res.status(400).json({ error: err.message });
