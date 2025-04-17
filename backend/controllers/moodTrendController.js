@@ -3,10 +3,17 @@ const Suggestion = require('../models/Suggestion');
 const mongoose = require('mongoose');
 
 // Helper function: get date range
-const getDateRange = (days) => {
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - (days - 1));
+const getDateRange = (days, startDateParam = null, endDateParam = null) => {
+  // Initialize with default values
+  const endDate = endDateParam ? new Date(endDateParam) : new Date();
+  const startDate = startDateParam ? new Date(startDateParam) : new Date();
+  
+  // If startDate is not provided, calculate it based on days
+  if (!startDateParam) {
+    startDate.setDate(startDate.getDate() - (days - 1));
+  }
+
+  // Set time to beginning and end of day
   startDate.setHours(0, 0, 0, 0);
   endDate.setHours(23, 59, 59, 999);
   
@@ -18,23 +25,24 @@ exports.getMoodTrends = async (req, res) => {
   try {
     const userId = req.params.userId;
     const range = parseInt(req.query.range) || 7; // Default 7 days, if not specified
+    const startDate = req.query.startDate || null; // New parameter
     
     if (range !== 7 && range !== 30) {
       return res.status(400).json({ error: 'Time range must be either 7 or 30 days' });
     }
 
-    const { startDate, endDate } = getDateRange(range);
+    const dateRange = getDateRange(range, startDate);
 
     // Get answers within the date range and sort by date
     const answers = await Answer.find({
       user_id: userId,
-      date: { $gte: startDate, $lte: endDate }
+      date: { $gte: dateRange.startDate, $lte: dateRange.endDate }
     }).sort({ date: 1 });
 
     // Fetch suggestions within the same date range
     const suggestions = await Suggestion.find({
       user_id: userId,
-      date: { $gte: startDate, $lte: endDate }
+      date: { $gte: dateRange.startDate, $lte: dateRange.endDate }
     }).sort({ date: 1 });
     
     // Process answers to create trend data
@@ -43,8 +51,8 @@ exports.getMoodTrends = async (req, res) => {
     res.json({
       userId,
       range,
-      startDate,
-      endDate,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
       availableDays: trendData.length,
       data: trendData
     });
@@ -134,20 +142,21 @@ exports.getMoodAggregation = async (req, res) => {
   try {
     const userId = req.params.userId;
     const range = parseInt(req.query.range) || 7; // Default to 7 days if not specified
+    const endDate = req.query.endDate || null; // New parameter
     
     if (range !== 7 && range !== 30) {
       return res.status(400).json({ error: 'Range must be either 7 or 30 days' });
     }
 
-    const { startDate, endDate } = getDateRange(range);
+    const dateRange = getDateRange(range, null, endDate);
 
     // Use aggregation pipeline for efficient data processing
     const aggregatedData = await Answer.aggregate([
       // Match answers for the specified user and date range
       {
         $match: {
-          user_id: mongoose.Types.ObjectId(userId),
-          date: { $gte: startDate, $lte: endDate }
+          user_id: new mongoose.Types.ObjectId(userId),
+          date: { $gte: dateRange.startDate, $lte: dateRange.endDate }
         }
       },
       // Group by date and calculate metrics
@@ -180,7 +189,7 @@ exports.getMoodAggregation = async (req, res) => {
     // Get suggestions for the same date range
     const suggestions = await Suggestion.find({
       user_id: userId,
-      date: { $gte: startDate, $lte: endDate }
+      date: { $gte: dateRange.startDate, $lte: dateRange.endDate }
     }).sort({ date: 1 });
 
     // Group suggestions by date
@@ -222,8 +231,8 @@ exports.getMoodAggregation = async (req, res) => {
     res.json({
       userId,
       range,
-      startDate,
-      endDate,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
       stats,
       dailyData: enrichedData
     });
