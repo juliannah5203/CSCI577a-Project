@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignInPage from "./components/SignInPage";
@@ -21,19 +22,18 @@ function AppWrapper() {
         <App />
       </Router>
     </SnackbarProvider>
-
-  return (
     <Router>
       <Routes>
         <Route path="/" element={<SignInPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/userprofile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
         <Route path="/checkin" element={<ProtectedRoute><CheckIn /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
         {/* <Route path="/ai" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} /> */}
         <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+//         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/mood" element={<ProtectedRoute><MoodTrends /></ProtectedRoute>} />
+        
       </Routes>
     </Router>
   );

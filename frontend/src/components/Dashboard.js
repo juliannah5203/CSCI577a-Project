@@ -1,19 +1,45 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
-  Grid,
   Paper,
   IconButton,
   Badge,
-  // Avatar,
-  // Menu,
-  // MenuItem,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-// import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+
+// Reusable Card Component with consistent width
+const DashboardCard = ({ children, onClick, minHeight }) => (
+  <Paper
+    onClick={onClick}
+    sx={{
+      width: '100%', // full width of grid column
+      p: 2,
+      borderRadius: 4,
+      minHeight,
+      cursor: 'pointer',
+      transition: 'box-shadow 0.3s ease',
+      boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.29)',
+      '&:hover': {
+        boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.46)',
+      },
+    }}
+  >
+    {children}
+  </Paper>
+);
+
+DashboardCard.propTypes = {
+  children: PropTypes.node.isRequired,
+  onClick: PropTypes.func,
+  minHeight: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+};
 
 // Tab/Subheader Section Component
 const TabSection = () => (
@@ -26,11 +52,11 @@ const TabSection = () => (
       mb: 4,
     }}
   >
-    <Typography variant="h5" fontWeight="bold" fontSize={28}>
-      Dashboard{' '}
-      <Typography component="span" fontWeight="normal" color="text.secondary">
+    <Typography variant="h5" fontWeight="bold" fontSize={32}>
+      Welcome back!{' '}
+      {/* <Typography component="span" fontWeight="normal" color="text.secondary">
         Welcome back!
-      </Typography>
+      </Typography> */}
     </Typography>
     <Badge
       badgeContent={1}
@@ -59,31 +85,30 @@ const TabSection = () => (
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  // Dimensions for the cards – adjust these values as needed
-  const cardDimensions = {
-    checkin: { minHeight: 150 },
-    history: { minHeight: 150 },
-    mood: { minHeight: 300 },
-    ai: { minHeight: 300 },
-  };
-
   return (
     <Layout>
-      {/* <HeaderSection /> */}
-      <TabSection />
+      {/* Centered content container */}
+      <Box
+        sx={{
+          maxWidth: '60vw',
+          margin: '0 auto',
+          px: 2,
+        }}
+      >
+        <TabSection />
 
-      {/* First row – Check-In & History */}
-      <Grid container spacing={3} mb={4} justifyContent="flex-start">
-        <Grid item sx={{ flex: '0 0 400px', maxWidth: '400px' }}>
-          <Paper
-            elevation={4}
-            sx={{
-              p: 2,
-              borderRadius: 4,
-              ...cardDimensions.checkin,
-              cursor: 'pointer',
-            }}
+        {/* First row – Check-In & History */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+            gap: 3,
+            mb: 4,
+          }}
+        >
+          <DashboardCard
             onClick={() => navigate('/checkin')}
+            minHeight={200}
           >
             <Typography variant="h6">
               Check-In{' '}
@@ -91,58 +116,42 @@ const Dashboard = () => {
                 1
               </Typography>
             </Typography>
-          </Paper>
-        </Grid>
-        <Grid item sx={{ flex: '0 0 400px', maxWidth: '400px' }}>
-          <Paper
-            elevation={4}
-            sx={{
-              p: 2,
-              borderRadius: 4,
-              ...cardDimensions.history,
-              cursor: 'pointer',
-            }}
+          </DashboardCard>
+
+          <DashboardCard
             onClick={() => navigate('/history')}
+            minHeight={200}
           >
             <Typography variant="h6">History</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+          </DashboardCard>
+        </Box>
 
-      <hr />
+        {/* <hr /> */}
 
-      {/* Second row – Mood Trends & AI-Insights */}
-      <Grid container spacing={3} mt={2}>
-        <Grid item xs={12} md={6}>
-          <Paper
-            elevation={4}
-            sx={{
-              p: 2,
-              borderRadius: 4,
-              ...cardDimensions.mood,
-              cursor: 'pointer',
-            }}
+        {/* Second row – Mood Trends & AI-Insights with longer height */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+            gap: 3,
+            mt: 2,
+          }}
+        >
+          <DashboardCard
             onClick={() => navigate('/mood')}
+            minHeight={300}
           >
             <Typography variant="h6">Mood Trends</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper
-            elevation={4}
-            sx={{
-              p: 2,
-              borderRadius: 4,
-              ...cardDimensions.ai,
-              cursor: 'pointer',
-            }}
+          </DashboardCard>
+
+          <DashboardCard
             onClick={() => navigate('/ai')}
+            minHeight={300}
           >
             <Typography variant="h6">AI-Insights</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-    {/* </Box> */}
+          </DashboardCard>
+        </Box>
+      </Box>
     </Layout>
   );
 };
