@@ -32,6 +32,7 @@ function AppWrapper() {
         </Routes>
       </Router>
     </SnackbarProvider>
+
   );
 }
 
