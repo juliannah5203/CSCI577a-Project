@@ -1,4 +1,5 @@
-import React from 'react';
+// src/pages/Dashboard.js
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Box,
@@ -8,15 +9,17 @@ import {
   Badge,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import axios from 'axios';
 
 // Reusable Card Component with consistent width
 const DashboardCard = ({ children, onClick, minHeight }) => (
   <Paper
     onClick={onClick}
     sx={{
-      width: '100%', // full width of grid column
+      width: '100%',
       p: 2,
       borderRadius: 4,
       minHeight,
@@ -42,62 +45,109 @@ DashboardCard.propTypes = {
 };
 
 // Tab/Subheader Section Component
-const TabSection = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      px: 0.75,
-      mb: 4,
-    }}
-  >
-    <Typography variant="h5" fontWeight="bold" fontSize={32}>
-      Welcome back!{' '}
-      {/* <Typography component="span" fontWeight="normal" color="text.secondary">
+const TabSection = ({ needAlert, onClearAlert }) => {
+  const [showMessage, setShowMessage] = useState(false);
+
+  const handleIconClick = () => {
+    if (needAlert) setShowMessage(true);
+  };
+
+  const handleClose = () => {
+    setShowMessage(false);
+    onClearAlert();
+  };
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative', px: 0.75, mb: 4 }}>
+      <Typography variant="h5" fontWeight="bold" fontSize={32} sx={{ flexGrow: 1 }}>
         Welcome back!
-      </Typography> */}
-    </Typography>
-    <Badge
-      badgeContent={1}
-      color="error"
-      sx={{
-        '& .MuiBadge-badge': {
-          top: -5,
-          right: -5,
-          transform: 'none',
-        },
-      }}
-    >
-      <IconButton
-        sx={{
-          backgroundColor: 'grey.300',
-          borderRadius: '50%',
-          p: 1,
-        }}
-      >
-        <NotificationsIcon />
-      </IconButton>
-    </Badge>
-  </Box>
-);
+      </Typography>
+
+      <Box sx={{ position: 'relative' }}>
+        <Badge
+          badgeContent={needAlert ? 1 : 0}
+          color="error"
+          sx={{
+            '& .MuiBadge-badge': {
+              top: -5,
+              right: -5,
+              transform: 'none',
+            },
+          }}
+        >
+          <IconButton
+            onClick={handleIconClick}
+            sx={{
+              backgroundColor: 'grey.300',
+              borderRadius: '50%',
+              p: 1,
+              '&:hover': {
+                backgroundColor: 'grey.400',
+              },
+            }}
+          >
+            <NotificationsIcon />
+          </IconButton>
+        </Badge>
+
+        {showMessage && (
+          <Paper
+            elevation={3}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              right: '100%',
+              transform: 'translateY(-50%)',
+              mr: 1,
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: 4,
+              width: 'max-content',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Typography sx={{ mr: 1 }}>You missed one check-in!</Typography>
+            <IconButton size="small" onClick={handleClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Paper>
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+TabSection.propTypes = {
+  needAlert: PropTypes.bool.isRequired,
+  onClearAlert: PropTypes.func.isRequired,
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [needAlert, setNeedAlert] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:5001/api/alert', { withCredentials: true })
+      .then((res) => {
+        setNeedAlert(res.data.need_alert);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch alert status:', err);
+      });
+  }, []);
+
+  const handleClearAlert = () => {
+    setNeedAlert(false);
+    // optionally notify backend to clear alert
+  };
 
   return (
     <Layout>
-      {/* Centered content container */}
-      <Box
-        sx={{
-          maxWidth: '60vw',
-          margin: '0 auto',
-          px: 2,
-        }}
-      >
-        <TabSection />
+      <Box sx={{ maxWidth: '60vw', margin: '0 auto', px: 2 }}>
+        <TabSection needAlert={needAlert} onClearAlert={handleClearAlert} />
 
-        {/* First row – Check-In & History */}
         <Box
           sx={{
             display: 'grid',
@@ -106,29 +156,22 @@ const Dashboard = () => {
             mb: 4,
           }}
         >
-          <DashboardCard
-            onClick={() => navigate('/checkin')}
-            minHeight={200}
-          >
+          <DashboardCard onClick={() => navigate('/checkin')} minHeight={200}>
             <Typography variant="h6">
               Check-In{' '}
-              <Typography component="span" color="error" fontWeight="bold">
-                1
-              </Typography>
+              {needAlert && (
+                <Typography component="span" color="error" fontWeight="bold">
+                  1
+                </Typography>
+              )}
             </Typography>
           </DashboardCard>
 
-          <DashboardCard
-            onClick={() => navigate('/history')}
-            minHeight={200}
-          >
+          <DashboardCard onClick={() => navigate('/history')} minHeight={200}>
             <Typography variant="h6">History</Typography>
           </DashboardCard>
         </Box>
 
-        {/* <hr /> */}
-
-        {/* Second row – Mood Trends & AI-Insights with longer height */}
         <Box
           sx={{
             display: 'grid',
@@ -137,17 +180,11 @@ const Dashboard = () => {
             mt: 2,
           }}
         >
-          <DashboardCard
-            onClick={() => navigate('/mood')}
-            minHeight={300}
-          >
+          <DashboardCard onClick={() => navigate('/mood')} minHeight={300}>
             <Typography variant="h6">Mood Trends</Typography>
           </DashboardCard>
 
-          <DashboardCard
-            onClick={() => navigate('/ai')}
-            minHeight={300}
-          >
+          <DashboardCard onClick={() => navigate('/ai')} minHeight={300}>
             <Typography variant="h6">AI-Insights</Typography>
           </DashboardCard>
         </Box>
