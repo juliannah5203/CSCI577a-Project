@@ -6,10 +6,14 @@ const mongoose = require('mongoose');
 const getDateRange = (days, startDateParam = null, endDateParam = null) => {
   // Initialize with default values
   const endDate = endDateParam ? new Date(endDateParam) : new Date();
-  const startDate = startDateParam ? new Date(startDateParam) : new Date();
+  let startDate;
   
-  // If startDate is not provided, calculate it based on days
-  if (!startDateParam) {
+  if (startDateParam) {
+    // If start date is provided, use it
+    startDate = new Date(startDateParam);
+  } else {
+    // If start date is not provided, calculate it based on end date and days
+    startDate = new Date(endDate);
     startDate.setDate(startDate.getDate() - (days - 1));
   }
 

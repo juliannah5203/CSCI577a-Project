@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 
 /**
  * A route that checks if the user is authenticated. If the user is
@@ -22,14 +23,23 @@ const ProtectedRoute = ({ children }) => {
     axios.get('http://localhost:5001/auth/current_user', { withCredentials: true })
       .then((res) => {
         if (res.data && res.data.id) {
+          Cookies.set('mindcareUser', JSON.stringify({
+            id:     res.data.userId,
+            name:   res.data.name,
+            email:  res.data.email,
+            region: res.data.region || '',
+            sex:    res.data.sex    || '',
+            }), { expires: 7, sameSite: 'Lax' });
           setAuthenticated(true);
         } else {
+          Cookies.remove('mindcareUser');
           setAuthenticated(false);
         }
         setIsLoading(false);
       })
       .catch((err) => {
         console.error('Session check failed:', err);
+        Cookies.remove('mindcareUser');
         setAuthenticated(false);
         setIsLoading(false);
       });

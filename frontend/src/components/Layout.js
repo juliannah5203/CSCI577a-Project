@@ -46,7 +46,7 @@ const NavigationMenu = () => {
         sx={{
           color: 'inherit',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.32)',
+            backgroundColor: 'rgba(0, 0, 0, 0.21)',
           },
         }}
       >

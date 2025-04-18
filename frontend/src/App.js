@@ -1,5 +1,4 @@
-
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignInPage from "./components/SignInPage";
 import Dashboard from "./components/Dashboard";
@@ -11,13 +10,12 @@ import CheckIn from "./components/CheckIn";
 import MoodTrends from "./components/MoodTrends";
 // import AIInsights from "./components/AIInsights"; // Uncomment if used
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useStoreUserCookie } from './hooks/useCurrentUser';
 import { SnackbarProvider } from "./context/SnackbarContext";
-import { setSnackbarHandler } from "./utils/axiosInstance";
-import { useSnackbar } from "./context/SnackbarContext";
-
-
 
 function AppWrapper() {
+  useStoreUserCookie();
+  
   return (
     <SnackbarProvider>
       <Router>
