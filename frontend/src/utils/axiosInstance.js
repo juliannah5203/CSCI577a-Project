@@ -1,5 +1,5 @@
 import axios from "axios";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 
 let showSnackbar = null;
 
@@ -22,14 +22,21 @@ axiosInstance.interceptors.response.use(
       error.response.status === 401 &&
       error.response.data?.error === "You are not authenticated"
     ) {
-      // 移除 session token
-      Cookies.remove("sessionToken");
-
-      // 導回登入頁
-      //   window.location.href = "/signin";
-
-      // 顯示錯誤訊息
+      // show error and logout
       showSnackbar?.("Authentication required", "error");
+      window.location.href = "/";
+    } else if (error.response && error.response.status === 500) {
+      // 處理 500 錯誤
+      const msg =
+        error.response.data?.error || "Internal server error occurred.";
+      showSnackbar?.(msg, "error");
+    } else {
+      // 所有其他錯誤也顯示
+      const msg =
+        error.response?.data?.error ||
+        error.message ||
+        "An unexpected error occurred";
+      showSnackbar?.(msg, "error");
     }
 
     return Promise.reject(error);

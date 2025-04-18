@@ -16,15 +16,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Layout from "./Layout";
 import axiosInstance from "../utils/axiosInstance";
-
-const userId = "67ff8a8411c7fe597dcf6a92"; // Replace with dynamic user ID if available
-
-const feedbackSamples = [
-  "Your mood has been pretty stable this week, keep it up! 👍",
-  "Your mood significantly improved over the weekend, relaxation is key!",
-  "Your mood was lower on Wednesday, try to manage stress or take more breaks.",
-  "Overall, your mood has been high this week. Keep up the good work!",
-];
+import getUser from "../utils/getUser";
 
 const calculateStatistics = (data) => {
   const moodValues = data.map((d) => d.mood);
@@ -58,31 +50,34 @@ const calculateAverageDailyRate = (data) => {
 };
 
 export default function Trends() {
+  const userId = getUser().id;
   const [range, setRange] = useState(7);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [chartData, setChartData] = useState([]);
-  const [feedback] = useState(() => {
-    const rand = Math.floor(Math.random() * feedbackSamples.length);
-    return feedbackSamples[rand];
-  });
+  const [suggestion, setSuggestion] = useState("-");
 
   const fetchMoodAggregation = async (rangeValue = 7, date = new Date()) => {
     try {
       const res = await axiosInstance.get(
-        `/users/${userId}/mood-aggregation/?endDate=${format(
+        `http://localhost:5001/api/mood-aggregation/${userId}?endDate=${format(
           date,
           "yyyy-MM-dd"
         )}&range=${rangeValue}`
       );
-      console.log("Mood aggregation data:", res.data);
       const sortedData = res.data.dailyData
         .map((entry) => ({
           ...entry,
           mood: entry.averageScore,
         }))
         .sort((a, b) => new Date(a.date) - new Date(b.date));
-      console.log("Sorted data:", sortedData);
+      console.log("Fetched mood aggregation data:", res.data);
       setChartData(sortedData);
+
+      setSuggestion(
+        res.data.suggestions?.[0]?.content
+          ? res.data.suggestions[0].content.trim()
+          : "-"
+      );
     } catch (err) {
       console.error("Failed to fetch mood aggregation data", err);
     }
@@ -236,7 +231,7 @@ export default function Trends() {
                 AI Suggestions
               </Typography>
               <Divider sx={{ mb: 1 }} />
-              <Typography variant="body1">{feedback}</Typography>
+              <Typography variant="body1">{suggestion}</Typography>
             </Paper>
           </Stack>
         </Box>
