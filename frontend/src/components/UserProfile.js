@@ -1,69 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Typography,
-  Button
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Typography, Button } from '@mui/material';
 import Layout from './Layout';
+import Cookies from 'js-cookie';
+
+// helper to read the cookie when this component mounts
+function getInitialProfile() {
+  const raw = Cookies.get('mindcareUser');
+  if (!raw) return { name:'', email:'', region:'', sex:'' };
+  const { name, email, region, sex } = JSON.parse(raw);
+  return { name, email, region, sex };
+}
 
 const UserProfile = () => {
-  const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    region: '',
-    sex: '',
-    profilePicture: '',
-  });
-  const [originalProfile, setOriginalProfile] = useState(null);
+  const [profile, setProfile] = useState(getInitialProfile());
+  const [originalProfile, setOriginalProfile] = useState(profile);
   const [editing, setEditing] = useState(false);
-  const navigate = useNavigate();
 
-  // Fetch user profile
-  useEffect(() => {
-    axios.get('http://localhost:5001/api/users/profile', { withCredentials: true })
-      .then(res => {
-        const data = res.data;
-        const newProfile = {
-          name: data.name || '',
-          email: data.email || '',
-          region: data.region || '',
-          sex: data.sex || '',
-          // profilePicture: data.profilePicture || '',
-        };
-        setProfile(newProfile);
-        setOriginalProfile(newProfile);
-      })
-      .catch(err => {
-        console.error('Failed to fetch profile:', err);
-        // If profile fetching fails, redirect the user to the sign-in page.
-        navigate('/');
-      });
-  }, [navigate]);
-
+  // Handle input changes
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProfile((p) => ({ ...p, [name]: value }));
   };
 
-  // Toggle edit mode. Save a backup before editing.
+  // Toggle edit mode
   const handleEditToggle = () => {
-    if (!editing) {
-      setOriginalProfile(profile);
-    } else {
+    if (editing) {
       setProfile(originalProfile);
+    } else {
+      setOriginalProfile(profile);
     }
     setEditing(!editing);
   };
 
-  // Update the profile via a PUT request.
+  // Save changes to backend and update cookie
   const handleSave = () => {
     const { name, region, sex } = profile;
-    axios.put('http://localhost:5001/api/users/profile', { name, region, sex }, { withCredentials: true })
+    axios
+      .put('http://localhost:5001/api/users/profile', { name, region, sex }, { withCredentials: true })
       .then(() => {
         setEditing(false);
+        // Update cookie with new profile fields
+        Cookies.set('mindcareUser', JSON.stringify({
+          ...profile,
+          email: profile.email
+        }), { expires: 7, sameSite: 'Lax' });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Update failed:', err);
         alert('Failed to save profile. Reverting changes.');
         setProfile(originalProfile);
@@ -71,6 +54,7 @@ const UserProfile = () => {
       });
   };
 
+  // Logout
   const handleLogout = () => {
     window.location.href = 'http://localhost:5001/auth/logout';
   };
@@ -86,7 +70,7 @@ const UserProfile = () => {
             {editing ? 'Cancel' : 'Edit'}
           </button>
         </div>
-        
+
         <Box sx={styles.infoRow}>
           <strong>Name:</strong>
           {editing ? (
@@ -100,18 +84,15 @@ const UserProfile = () => {
             profile.name
           )}
         </Box>
+
         <Box sx={styles.infoRow}>
           <strong>Email:</strong> {profile.email}
         </Box>
+
         <Box sx={styles.infoRow}>
           <strong>Gender:</strong>
           {editing ? (
-            <select
-              name="sex"
-              value={profile.sex}
-              onChange={handleChange}
-              style={styles.input}
-            >
+            <select name="sex" value={profile.sex} onChange={handleChange} style={styles.input}>
               <option value="">Select</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -142,11 +123,11 @@ const UserProfile = () => {
             </button>
           </Box>
         )}
-       
+
         <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Button 
-            variant="outlined" 
-            color="error" 
+          <Button
+            variant="outlined"
+            color="error"
             onClick={handleLogout}
             sx={{
               borderRadius: 2,
@@ -154,8 +135,8 @@ const UserProfile = () => {
               py: 1.5,
               textTransform: 'uppercase',
               fontWeight: 'bold',
-              '&:hover': { boxShadow: 4 }
-              }}
+              '&:hover': { boxShadow: 4 },
+            }}
           >
             Logout
           </Button>
