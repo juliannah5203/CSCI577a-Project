@@ -19,6 +19,8 @@ import enUS from "date-fns/locale/en-US";
 import PropTypes from "prop-types";
 import axiosInstance from "../utils/axiosInstance";
 import Layout from "./Layout";
+// import Cookies from "js-cookie";
+import getUser from "../utils/getUser";
 
 const moodMap = {
   1: { emoji: "😔", label: "Sad" },
@@ -58,11 +60,10 @@ ServerDay.propTypes = {
 };
 
 export default function History() {
+  let userId = getUser().id;
   const [moodData, setMoodData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const prevDateRef = React.useRef(null);
-
-  const userId = "67ff8a8411c7fe597dcf6a92"; // Replace with actual user ID
 
   const fetchMoodData = async (startDate) => {
     try {
@@ -73,12 +74,12 @@ export default function History() {
       );
       const formattedDate = format(firstDay, "yyyy-MM-dd");
       const res = await axiosInstance.get(
-        `http://localhost:5001/api/users/${userId}/mood-trends/?startDate=${formattedDate}&range=31`,
+        `http://localhost:5001/api/mood-trends/${userId}?startDate=${formattedDate}&range=31`,
         {
           withCredentials: true,
         }
       );
-      const flattened =
+      const moodData =
         res.data.data?.map((entry) => ({
           date: entry.moodEntries[0].time,
           mood: entry.averageScore,
@@ -87,8 +88,7 @@ export default function History() {
             ? entry.suggestions[0].content.trim()
             : "",
         })) || [];
-      console.log("Fetched mood data:", flattened);
-      setMoodData(flattened);
+      setMoodData(moodData);
     } catch (err) {
       console.error("Failed to fetch mood trends", err);
     }
