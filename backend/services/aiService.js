@@ -47,7 +47,32 @@ const {
     return result.response.text();
   }
 
-  module.exports = { getSummary };
+  async function getWeeklySummary(prompt) {
+    const chatSession = model.startChat({
+      generationConfig,
+      history: [
+      ],
+    });
+  
+    const result = await chatSession.sendMessage("We are a mental health app. Give me a two-sentence positive message/summary given this person's input. Here's the check-in messages over the past week: " + JSON.stringify(prompt));
+    console.log(result.response.text());
+    return result.response.text();
+  }
+
+  async function getMonthlySummary(prompt) {
+    const chatSession = model.startChat({
+      generationConfig,
+      history: [
+      ],
+    });
+  
+    const result = await chatSession.sendMessage("We are a mental health app. Give me a three-sentence positive message/summary/highlight given this person's input. Here's the check-in messages over the past month: " + JSON.stringify(prompt));
+    console.log(result.response.text());
+    return result.response.text();
+  }
+
+
+  module.exports = { getSummary, getWeeklySummary, getMonthlySummary };
   
 // LOCAL TESTING 
 

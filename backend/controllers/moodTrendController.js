@@ -232,12 +232,25 @@ exports.getMoodAggregation = async (req, res) => {
       trend: calculateTrend(allScores)
     };
 
+    // Get mood trend data for AI summary
+    const trendData = await getMoodTrendsData(userId, dateRange.startDate, dateRange.endDate);
+    // Generate AI summary based on the range
+    let aiSummary = null;
+    if (trendData.length > 0) {
+      if (range === 7) {
+        aiSummary = await getWeeklySummary(trendData);
+      } else if (range === 31) {
+        aiSummary = await getMonthlySummary(trendData);
+      }
+    }
+    
     res.json({
       userId,
       range,
       startDate: dateRange.startDate,
       endDate: dateRange.endDate,
       stats,
+      aiSummary,
       dailyData: enrichedData
     });
   } catch (err) {
@@ -245,6 +258,29 @@ exports.getMoodAggregation = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Helper function to get mood trend data in the format required for AI service
+async function getMoodTrendsData(userId, startDate, endDate) {
+  try {
+    // Get answers within the date range and sort by date
+    const answers = await Answer.find({
+      user_id: userId,
+      date: { $gte: startDate, $lte: endDate }
+    }).sort({ date: 1 });
+
+    // Fetch suggestions within the same date range
+    const suggestions = await Suggestion.find({
+      user_id: userId,
+      date: { $gte: startDate, $lte: endDate }
+    }).sort({ date: 1 });
+    
+    // Process answers to create trend data
+    return processMoodTrendsWithSuggestions(answers, suggestions);
+  } catch (error) {
+    console.error('Error getting mood trend data for AI summary:', error);
+    return [];
+  }
+}
 
 // Calculate trend direction (improving, declining, stable)
 function calculateTrend(scores) {
