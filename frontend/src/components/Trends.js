@@ -73,11 +73,7 @@ export default function Trends() {
       console.log("Fetched mood aggregation data:", res.data);
       setChartData(sortedData);
 
-      setSuggestion(
-        res.data.suggestions?.[0]?.content
-          ? res.data.suggestions[0].content.trim()
-          : "-"
-      );
+      setSuggestion(res.data.aiSummary ? res.data.aiSummary : "-");
     } catch (err) {
       console.error("Failed to fetch mood aggregation data", err);
     }
@@ -117,20 +113,9 @@ export default function Trends() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-
           minHeight: "100vh",
         }}
       >
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          fontSize={28}
-          align="center"
-          mb={2}
-        >
-          Trend Analysis
-        </Typography>
-
         <Box sx={{ width: "100%", maxWidth: 600 }}>
           <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
             <Box sx={{ flex: 1 }}>

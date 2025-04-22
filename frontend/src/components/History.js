@@ -19,7 +19,6 @@ import enUS from "date-fns/locale/en-US";
 import PropTypes from "prop-types";
 import axiosInstance from "../utils/axiosInstance";
 import Layout from "./Layout";
-// import Cookies from "js-cookie";
 import getUser from "../utils/getUser";
 
 const moodMap = {
@@ -61,6 +60,7 @@ ServerDay.propTypes = {
 
 export default function History() {
   let userId = getUser().id;
+  console.log(getUser());
   const [moodData, setMoodData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const prevDateRef = React.useRef(null);
@@ -115,16 +115,6 @@ export default function History() {
   return (
     <Layout>
       <Box sx={{ p: 2 }}>
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          fontSize={28}
-          align="center"
-          mb={2}
-        >
-          History
-        </Typography>
-
         {/* Centered and Moderately Sized Card */}
         <Card
           variant="outlined"
