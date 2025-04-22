@@ -5,10 +5,8 @@ import Dashboard from "./components/Dashboard";
 import UserProfile from "./components/UserProfile";
 import Trends from "./components/Trends";
 import History from "./components/History";
-// import Settings from "./components/Settings";
 import CheckIn from "./components/CheckIn";
-import MoodTrends from "./components/MoodTrends";
-// import AIInsights from "./components/AIInsights"; // Uncomment if used
+import Settings from "./components/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useStoreUserCookie } from "./hooks/useCurrentUser";
 import { SnackbarProvider } from "./context/SnackbarContext";
@@ -69,15 +67,22 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/mood"
         element={
           <ProtectedRoute>
             <MoodTrends />
           </ProtectedRoute>
         }
+      /> */}
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
       />
-      {/* <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} */}
     </Routes>
   );
 }
