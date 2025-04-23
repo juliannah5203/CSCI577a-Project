@@ -71,7 +71,7 @@ const TabSection = ({ needAlert, onClearAlert }) => {
         </IconButton>
       </Badge>
       {open && (
-        <Paper elevation={3} sx={{ position: 'absolute', top: 56, right: 16, p: 1, display: 'flex', alignItems: 'center', borderRadius: 4 }}>
+        <Paper elevation={3} sx={{ position: 'absolute', top: -5, right: 50, p: 1, display: 'flex', alignItems: 'center', borderRadius: 4 }}>
           <Typography sx={{ mr: 1 }}>You missed one check-in!</Typography>
           <IconButton size="small" onClick={() => { setOpen(false); onClearAlert(); }}>
             <CloseIcon fontSize="small" />
@@ -191,7 +191,7 @@ const Dashboard = () => {
               </Typography>
             </DashboardCard>
 
-            <DashboardCard onClick={() => navigate('/mood')}>
+            <DashboardCard onClick={() => navigate('/trends')}>
               <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
                 Mood Trends
               </Typography>

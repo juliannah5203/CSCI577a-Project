@@ -92,7 +92,7 @@ const HeaderSection = () => {
       .then((res) => setUsername(res.data.name || ""))
       .catch((err) => console.error("Failed to fetch username:", err));
 
-    console.log("Trigger api");
+    // console.log("Trigger api");
   }, []);
 
   const pageLabels = {
@@ -132,8 +132,8 @@ const HeaderSection = () => {
         sx={{
           position: "relative",
           zIndex: 1,
-          px: { xs: 0.25, md: 5 },
-          py: 1.75,
+          px: { xs: 2, md: 5 },
+          py: {xs:0.75, md:1.75},
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
