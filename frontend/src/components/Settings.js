@@ -21,6 +21,7 @@ const Settings = () => {
   const [linkedAccount] = useState("daddy@gmail.com");
   const [interfaceSetting, setInterfaceSetting] = useState("Default");
   const [isEditing, setIsEditing] = useState(false);
+  const [timezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
   return (
     <Layout>
@@ -118,6 +119,21 @@ const Settings = () => {
                     </IconButton>
                   )}
                 </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  bgcolor: "#f8faf4",
+                  px: 3,
+                  py: 2,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography sx={{ fontWeight: 600 }}>Time Zone:</Typography>
+                <Typography>{timezone}</Typography>
               </Box>
 
               <Box

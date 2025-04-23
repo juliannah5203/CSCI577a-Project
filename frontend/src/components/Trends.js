@@ -57,6 +57,9 @@ export default function Trends() {
   const [suggestion, setSuggestion] = useState("-");
 
   const fetchMoodAggregation = async (rangeValue = 7, date = new Date()) => {
+    const today = new Date();
+    if (date > today) return;
+
     try {
       const res = await axiosInstance.get(
         `http://localhost:5001/api/mood-aggregation/${userId}?endDate=${format(
@@ -70,7 +73,6 @@ export default function Trends() {
           mood: entry.averageScore,
         }))
         .sort((a, b) => new Date(a.date) - new Date(b.date));
-      console.log("Fetched mood aggregation data:", res.data);
       setChartData(sortedData);
 
       setSuggestion(res.data.aiSummary ? res.data.aiSummary : "-");
