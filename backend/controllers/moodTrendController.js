@@ -6,23 +6,72 @@ const {
   getMonthlySummary,
 } = require("../services/aiService");
 // Helper function: get date range
+// const getDateRange = (days, startDateParam = null, endDateParam = null) => {
+//   // Initialize with default values
+//   const endDate = endDateParam ? new Date(endDateParam) : new Date();
+//   let startDate;
+
+//   if (startDateParam) {
+//     // If start date is provided, use it
+//     startDate = new Date(startDateParam);
+//   } else {
+//     // If start date is not provided, calculate it based on end date and days
+//     startDate = new Date(endDate);
+//     startDate.setDate(startDate.getDate() - (days - 1));
+//   }
+
+//   // Set time to beginning and end of day
+//   startDate.setHours(0, 0, 0, 0);
+//   endDate.setHours(23, 59, 59, 999);
+
+//   return { startDate, endDate };
+// };
 const getDateRange = (days, startDateParam = null, endDateParam = null) => {
-  // Initialize with default values
-  const endDate = endDateParam ? new Date(endDateParam) : new Date();
+  const now = new Date();
+
+  const rawEndDate = endDateParam ? new Date(endDateParam) : now;
+  const endDate = new Date(
+    Date.UTC(
+      rawEndDate.getUTCFullYear(),
+      rawEndDate.getUTCMonth(),
+      rawEndDate.getUTCDate(),
+      23,
+      59,
+      59,
+      999
+    )
+  );
+
   let startDate;
-
   if (startDateParam) {
-    // If start date is provided, use it
-    startDate = new Date(startDateParam);
+    const rawStartDate = new Date(startDateParam);
+    startDate = new Date(
+      Date.UTC(
+        rawStartDate.getUTCFullYear(),
+        rawStartDate.getUTCMonth(),
+        rawStartDate.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+      )
+    );
   } else {
-    // If start date is not provided, calculate it based on end date and days
-    startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - (days - 1));
+    // 往前推 days - 1 天
+    const temp = new Date(endDate);
+    temp.setUTCDate(temp.getUTCDate() - (days - 1));
+    startDate = new Date(
+      Date.UTC(
+        temp.getUTCFullYear(),
+        temp.getUTCMonth(),
+        temp.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+      )
+    );
   }
-
-  // Set time to beginning and end of day
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
 
   return { startDate, endDate };
 };
