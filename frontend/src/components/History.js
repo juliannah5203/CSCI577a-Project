@@ -60,12 +60,14 @@ ServerDay.propTypes = {
 
 export default function History() {
   let userId = getUser().id;
-  console.log(getUser());
   const [moodData, setMoodData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const prevDateRef = React.useRef(null);
 
   const fetchMoodData = async (startDate) => {
+    const today = new Date();
+    if (startDate > today) return;
+
     try {
       const firstDay = new Date(
         startDate.getFullYear(),
@@ -81,7 +83,7 @@ export default function History() {
       );
       const moodData =
         res.data.data?.map((entry) => ({
-          date: entry.moodEntries[0].time,
+          date: entry.moodEntries?.[0] ? entry.moodEntries[0].time : entry.date,
           mood: entry.averageScore,
           note: entry.notes?.[0] || "-",
           suggestions: entry.suggestions?.[0]?.content
