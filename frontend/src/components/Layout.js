@@ -162,7 +162,7 @@ const HeaderSection = () => {
           {currentLabel && (
             <Typography
               variant="h4"
-              sx={{ fontSize: { xs: 0, md: 27 }, color: "gray" }}
+              sx={{ fontSize: { xs: 14, md: 27 }, color: "gray" }}
             >
               {` / ${currentLabel}`}
             </Typography>

@@ -167,11 +167,10 @@ const CheckIn = () => {
 
         {/* Date Display */}
         <Typography 
-          variant="h4" 
+          variant="h5" 
           sx={{ 
-            color: '#2e5c1e',
-            mb: 4,
-            fontWeight: 500
+            mb: 2,
+            fontWeight: "bold",
           }}
         >
           {currentDate}
@@ -179,12 +178,11 @@ const CheckIn = () => {
 
         {/* Mood Question */}
         <Typography 
-          variant="h4" 
+          variant="h6" 
           sx={{ 
-            color: '#2e5c1e',
-            mb: 3,
+            mb: 2,
             fontWeight: 500,
-            fontSize: '2rem'
+
           }}
         >
           How are you feeling today?
@@ -197,10 +195,11 @@ const CheckIn = () => {
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: 2,
-            mb: 4,
-            backgroundColor: '#d8ecd0',
+            mb: 2,
+            backgroundColor: 'white',
+            boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
             p: 3,
-            borderRadius: 2,
+            borderRadius: 4,
           }}
         >
           {moods.map((mood, index) => (
@@ -208,20 +207,23 @@ const CheckIn = () => {
               key={index}
               onClick={() => handleMoodSelect(index)}
               sx={{
-                width: '60px',
-                height: '60px',
+                width: {xs: '45px', md:'60px'},
+                height: {xs: '45px', md:'60px'},
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'white',
                 borderRadius: '50%',
                 cursor: 'pointer',
-                border: selectedMood === index ? `3px solid ${mood.borderColor}` : '2px solid #ccc',
-                boxShadow: selectedMood === index ? `0 0 10px ${mood.borderColor}40` : 'none',
-                transition: 'all 0.2s ease',
-                fontSize: '2rem',
+                
+                border: selectedMood === index ? `2px solid ${mood.borderColor}` : 'none',
+                boxShadow: selectedMood === index ? `2px 2px 10px rgba(0,0,0,0.46)` : '0px 2px 5px rgba(0,0,0,0.29)',
+                transition: 'all 0.3s ease',
+                fontSize: {xs:'2.5rem',md:'3.5rem'},
+                paddingTop: 0.4,
                 '&:hover': {
                   transform: 'scale(1.1)',
+                  boxShadow: '3px 6px 6px rgba(0,0,0,0.46)',
                 }
               }}
             >
@@ -232,14 +234,14 @@ const CheckIn = () => {
 
         {/* Notes Section */}
         <Typography 
-          variant="h5" 
+          variant="h6" 
           sx={{ 
-            color: '#2e5c1e',
+            // color: '#2e5c1e',
             mb: 2,
-            fontWeight: 500
+            fontWeight: 500,
           }}
         >
-          Notes(optional)
+          Notes (optional)
         </Typography>
         <Box
           component="textarea"
@@ -248,8 +250,10 @@ const CheckIn = () => {
           sx={{
             width: '100%',
             minHeight: '150px',
-            borderRadius: '10px',
+            borderRadius: 4,
             border: '1px solid #ccc',
+            boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
+            transition: 'all 0.3s ease',
             padding: 2,
             mb: 3,
             resize: 'vertical',
@@ -259,7 +263,11 @@ const CheckIn = () => {
             '&:focus': {
               outline: 'none',
               borderColor: '#4CAF50',
-              boxShadow: '0 0 5px rgba(76, 175, 80, 0.2)'
+              boxShadow: '4px 4px 5px rgba(0,0,0,0.46)'
+            },
+            '&:hover': {
+              boxShadow: '4px 4px 5px rgba(0,0,0,0.46)'
+
             }
           }}
         />
@@ -278,14 +286,18 @@ const CheckIn = () => {
             onClick={() => navigate('/dashboard')}
             sx={{
               padding: '10px 30px',
-              borderRadius: '20px',
-              border: '1px solid #ccc',
+              borderRadius: 4,
+              border: 'none',
               backgroundColor: 'white',
               cursor: 'pointer',
               fontSize: '1rem',
+              transition: 'box-shadow 0.3s ease',
+              boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
               '&:hover': {
-                backgroundColor: '#f5f5f5',
-              }
+              boxShadow: '2px 2px 4px rgba(0,0,0,0.46)'
+
+
+            }
             }}
           >
             Cancel
@@ -296,17 +308,24 @@ const CheckIn = () => {
             disabled={hasCheckedInToday}
             sx={{
               padding: '10px 30px',
-              borderRadius: '20px',
+              borderRadius: 4,
               border: 'none',
-              backgroundColor: hasCheckedInToday ? '#cccccc' : '#4CAF50',
-              color: 'white',
+              backgroundColor: hasCheckedInToday ? '#cccccc' : 'white',
+              color: 'green',
               cursor: hasCheckedInToday ? 'not-allowed' : 'pointer',
               fontSize: '1rem',
+              transition: 'box-shadow 0.3s ease',
+              fontWeight:  'bold',
+              boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
+
               '&:hover': {
-                backgroundColor: hasCheckedInToday ? '#cccccc' : '#45a049',
+                // backgroundColor: hasCheckedInToday ? '#cccccc' : '#45a049',
+              boxShadow: '4px 4px 5px rgba(0,0,0,0.46)',
               },
               '&:disabled': {
-                opacity: 0.7,
+                color:"gray",
+                opacity: 0.95,
+                boxShadow: 'none',
               }
             }}
           >
@@ -321,8 +340,9 @@ const CheckIn = () => {
             sx={{ 
               mt: 4,
               backgroundColor: '#f8faf6',
-              borderRadius: 3,
-              border: '1px solid #e0e0e0'
+              borderRadius: 4,
+              // border: '1px solid #e0e0e0',
+              boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
             }}
           >
             <CardContent>

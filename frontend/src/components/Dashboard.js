@@ -31,7 +31,7 @@ const moods = [
   { emoji: '😄', label: 'Great',  color: '#4169E1' },
 ];
 
-// Helper：为日期添加序数后缀
+
 function formatWithSuffix(date) {
   const d = date.getDate();
   const m = date.toLocaleString('default', { month: 'long' });
@@ -48,18 +48,18 @@ function formatWithSuffix(date) {
   return `${m} ${d}${suffix}, ${y}`;
 }
 
-// 可复用卡片组件
+
 const DashboardCard = ({ children, onClick, sx }) => (
   <Paper
     onClick={onClick}
-    sx={{ width: '100%', p: 2, borderRadius: 4, cursor: 'pointer', transition: 'box-shadow 0.3s ease', boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', '&:hover': { boxShadow: '4px 4px 8px rgba(0,0,0,0.46)' }, ...sx }}
+    sx={{ width: '100%', p: 2, borderRadius: 4, cursor: 'pointer', transition: 'box-shadow 0.3s ease', boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', '&:hover': { boxShadow: '4px 4px 5px rgba(0,0,0,0.46)' }, ...sx }}
   >
     {children}
   </Paper>
 );
 DashboardCard.propTypes = { children: PropTypes.node.isRequired, onClick: PropTypes.func, sx: PropTypes.object };
 
-// 通知区
+
 const TabSection = ({ needAlert, onClearAlert }) => {
   const [open, setOpen] = useState(false);
   return (
@@ -157,13 +157,13 @@ const Dashboard = () => {
       <Box sx={{ maxWidth: { xs: '100%', md: '60vw' }, mx: { xs: 0, md: 'auto' }, px: 2 }}>
         <TabSection needAlert={needAlert} onClearAlert={() => setNeedAlert(false)} />
 
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, mb: 4 }}>
 
           {/* 左：Check-In & Mood Trends */}
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
             <DashboardCard onClick={() => navigate('/checkin')}>
               <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                Check-In{' '}{(!todayEntry) && <Typography component="span" color="error" fontWeight="bold">1</Typography>}
+                Check-in{' '}{(!todayEntry) && <Typography component="span" color="error" fontWeight="bold">1</Typography>}
               </Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                 {formatWithSuffix(today)}
@@ -174,9 +174,9 @@ const Dashboard = () => {
                     <Box
                       key={i}
                       sx={{
-                        width: 50, height: 50,
+                        width: {xs: '40px', md:'50px'}, height: {xs: '40px', md:'50px'},
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        bgcolor: 'white', borderRadius: '50%', cursor: 'pointer', fontSize: '2.5rem', paddingTop: 0.5,
+                        bgcolor: 'white', borderRadius: '50%', cursor: 'pointer', fontSize: {xs:'2rem',md:'2.5rem'}, paddingTop: 0.5,
                         border: todayEntry.moodRating === i + 1 ? `3px solid ${m.color}` : 'none',
                         boxShadow: todayEntry.moodRating === i + 1 ? `0 0 10px ${m.color}40` : 'none',
                       }}

@@ -120,7 +120,7 @@ export default function Trends() {
       >
         <Box sx={{ width: "100%", maxWidth: 600 }}>
           <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1}}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   label="Select Date (End Date)"
@@ -128,19 +128,27 @@ export default function Trends() {
                   onChange={handleDateChange}
                   format="yyyy/MM/dd"
                   fullWidth
+                  sx={{
+                    boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
+                    backgroundColor: 'white',
+                  }}
                 />
               </LocalizationProvider>
             </Box>
 
-            <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end"}}>
               <ToggleButtonGroup
                 value={range}
                 exclusive
                 onChange={handleRangeChange}
                 fullWidth
+                sx={{
+                  boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
+                  backgroundColor: 'white'
+                }}
               >
-                <ToggleButton value={7}>Week</ToggleButton>
-                <ToggleButton value={31}>Month</ToggleButton>
+                <ToggleButton value={7} sx={{fontWeight:'bold'}}>Week</ToggleButton>
+                <ToggleButton value={31}sx={{fontWeight:'bold'}}>Month</ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Stack>
@@ -153,6 +161,9 @@ export default function Trends() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              borderRadius: 4,
+              boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', 
+              border:'none'
             }}
           >
             <LineChart
@@ -174,14 +185,14 @@ export default function Trends() {
           </Card>
 
           <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 4, flex: 1, boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', border:'none' }}>
               <Typography variant="subtitle1" gutterBottom>
                 Daily Rate
               </Typography>
               <Typography variant="h6">{displayAverageDailyRate}</Typography>
             </Paper>
 
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 4, flex: 1, boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', border:'none' }}>
               <Typography variant="subtitle1" gutterBottom>
                 Trend Change
               </Typography>
@@ -190,14 +201,14 @@ export default function Trends() {
           </Stack>
 
           <Stack direction="row" spacing={2} sx={{ mb: 2, width: "100%" }}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 4, flex: 1 , boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', border:'none'}}>
               <Typography variant="subtitle1" gutterBottom>
                 Average Mood
               </Typography>
               <Typography variant="h6">{displayAverageMood}</Typography>
             </Paper>
 
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, flex: 1 }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 4, flex: 1, boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', border:'none' }}>
               <Typography variant="subtitle1" gutterBottom>
                 Highest & Lowest
               </Typography>
@@ -212,7 +223,7 @@ export default function Trends() {
           <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
             <Paper
               variant="outlined"
-              sx={{ p: 2, borderRadius: 2, width: "100%", maxWidth: 600 }}
+              sx={{ p: 2, borderRadius: 4, width: "100%", maxWidth: 600, boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', border:'none' }}
             >
               <Typography variant="subtitle1" gutterBottom>
                 AI Suggestions

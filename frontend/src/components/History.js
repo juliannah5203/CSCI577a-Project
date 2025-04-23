@@ -126,6 +126,8 @@ export default function History() {
             mx: "auto",
             borderRadius: 4,
             mb: 2,
+            boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', 
+            border:'none'
           }}
         >
           <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -147,7 +149,13 @@ export default function History() {
                 },
                 "& .MuiTypography-root": {
                   fontSize: "1.2rem", // Reduced font size for date labels
+
                 },
+                "& .MuiPickersCalendarHeader-label": {
+                  fontSize: "1.2rem", 
+                  fontWeight:'bold'    
+                },
+                
               }}
             />
           </LocalizationProvider>
@@ -156,7 +164,9 @@ export default function History() {
         {/* Display Record Content in a Card */}
         <Card
           variant="outlined"
-          sx={{ maxWidth: 800, width: "100%", mx: "auto", borderRadius: 4 }}
+          sx={{ maxWidth: 800, width: "100%", mx: "auto", borderRadius: 4, 
+            boxShadow: '1px 1px 3px rgba(0,0,0,0.29)', 
+            border:'none', color: 'black' }}
         >
           <CardContent>
             <Stack

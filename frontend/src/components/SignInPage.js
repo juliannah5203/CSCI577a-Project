@@ -104,7 +104,7 @@ const SignInPage = () => {
               color: 'black',
               padding: '12px 24px',
               fontSize: '18px',
-              borderRadius: '4',
+              borderRadius: 4,
               cursor: 'pointer',
               transition: 'box-shadow 0.3s ease',
               boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.29)',

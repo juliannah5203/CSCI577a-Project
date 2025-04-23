@@ -27,7 +27,7 @@ const Settings = () => {
     <Layout>
       <Box
         sx={{
-          minHeight: "60vh",
+          // minHeight: "60vh",
           display: "flex",
           justifyContent: "center",
           py: 4,
@@ -38,8 +38,10 @@ const Settings = () => {
             width: "100%",
             maxWidth: 600,
             borderRadius: 4,
-            boxShadow: 6,
+            boxShadow: '1px 1px 3px rgba(0,0,0,0.29)',
+            border: 'none',
             p: 2,
+            
           }}
         >
           <CardContent>
@@ -52,7 +54,7 @@ const Settings = () => {
                   bgcolor: "#f8faf4",
                   px: 3,
                   py: 2,
-                  borderRadius: 2,
+                  borderRadius: 4,
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>Interface:</Typography>
@@ -80,7 +82,7 @@ const Settings = () => {
                   bgcolor: "#f8faf4",
                   px: 3,
                   py: 2,
-                  borderRadius: 2,
+                  borderRadius: 4,
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>
@@ -105,7 +107,7 @@ const Settings = () => {
                   bgcolor: "#f8faf4",
                   px: 3,
                   py: 2,
-                  borderRadius: 2,
+                  borderRadius: 4,
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>
@@ -129,7 +131,7 @@ const Settings = () => {
                   bgcolor: "#f8faf4",
                   px: 3,
                   py: 2,
-                  borderRadius: 2,
+                  borderRadius: 4,
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>Time Zone:</Typography>
@@ -144,7 +146,7 @@ const Settings = () => {
                   bgcolor: "#f8faf4",
                   px: 3,
                   py: 2,
-                  borderRadius: 2,
+                  borderRadius: 4,
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>Frequency:</Typography>
@@ -176,26 +178,51 @@ const Settings = () => {
                   variant="contained"
                   size="large"
                   onClick={() => setIsEditing(true)}
-                >
+                  sx={{
+                    borderRadius: 4,
+                    boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.29)',
+                    backgroundColor:'black', 
+                    color:'white',
+                    transition: 'box-shadow 0.3s ease',
+                    '&:hover': {boxShadow: '2px 2px 4px rgba(0,0,0,0.46)'}
+                  }}
+                    >
                   Edit
                 </Button>
               ) : (
                 <>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     size="large"
                     onClick={() => setIsEditing(false)}
+                    sx={{
+                      borderRadius: 4,
+                      boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.29)',
+                      backgroundColor:'black', 
+                      color:'white',
+                      transition: 'box-shadow 0.3s ease',
+                      '&:hover': {boxShadow: '2px 2px 4px rgba(0,0,0,0.46)'}
+                    }}
                   >
                     Cancel
                   </Button>
                   <Button
                     variant="contained"
-                    color="primary"
                     size="large"
                     onClick={() => {
                       // 可在此觸發 API call 儲存資料
                       setIsEditing(false);
                     }}
+                    sx={{
+                      borderRadius: 4,
+                      boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.29)',
+                      backgroundColor:'green', 
+                      color:'white',
+                      transition: 'box-shadow 0.3s ease',
+                      '&:hover': {boxShadow: '2px 2px 4px rgba(0,0,0,0.46)'}
+                    }}
+                    
+
                   >
                     Save
                   </Button>
