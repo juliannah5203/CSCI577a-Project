@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -31,6 +31,8 @@ const CheckIn = () => {
   const [notes, setNotes] = React.useState('');
   const [insights, setInsights] = React.useState(null);
   const [error, setError] = React.useState(null);
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
   const insightsCardRef = useRef(null);
 
@@ -40,6 +42,43 @@ const CheckIn = () => {
     day: 'numeric',
     year: 'numeric'
   });
+
+  // Get user ID on component mount
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/users/profile`, {
+          withCredentials: true
+        });
+        setUserId(response.data.userId ?? response.data.id);
+      } catch (error) {
+        console.error('Error getting user profile:', error);
+      }
+    };
+    getUserProfile();
+  }, []);
+
+  // Check if user has already checked in today
+  useEffect(() => {
+    const checkTodayCheckIn = async () => {
+      if (!userId) return; // Don't check if we don't have userId yet
+      
+      try {
+        const response = await axios.get(`${BASE_URL}/api/checkins/${userId}`, {
+          withCredentials: true
+        });
+        const today = new Date().toDateString();
+        const hasCheckedIn = response.data.some(item => 
+          new Date(item.date).toDateString() === today
+        );
+        setHasCheckedInToday(hasCheckedIn);
+      } catch (error) {
+        console.error('Error checking today\'s check-in:', error);
+      }
+    };
+
+    checkTodayCheckIn();
+  }, [userId]); // Run this effect when userId changes
 
   const moods = [
     { emoji: '😔', borderColor: '#9370DB', label: 'Sad' },
@@ -71,6 +110,7 @@ const CheckIn = () => {
       if (checkinResponse.status === 200 || checkinResponse.status === 201) {
         console.log(checkinResponse)
         setInsights(checkinResponse.data.ai_feedback);
+        setHasCheckedInToday(true); // Update state after successful submission
         // Optionally navigate to dashboard or show success message
         // navigate('/dashboard');
       }
@@ -206,7 +246,7 @@ const CheckIn = () => {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           sx={{
-            width: 'calc(100% - 32px)',
+            width: '100%',
             minHeight: '150px',
             borderRadius: '10px',
             border: '1px solid #ccc',
@@ -253,20 +293,24 @@ const CheckIn = () => {
           <Box
             component="button"
             onClick={handleSubmit}
+            disabled={hasCheckedInToday}
             sx={{
               padding: '10px 30px',
               borderRadius: '20px',
               border: 'none',
-              backgroundColor: '#4CAF50',
+              backgroundColor: hasCheckedInToday ? '#cccccc' : '#4CAF50',
               color: 'white',
-              cursor: 'pointer',
+              cursor: hasCheckedInToday ? 'not-allowed' : 'pointer',
               fontSize: '1rem',
               '&:hover': {
-                backgroundColor: '#45a049',
+                backgroundColor: hasCheckedInToday ? '#cccccc' : '#45a049',
+              },
+              '&:disabled': {
+                opacity: 0.7,
               }
             }}
           >
-            Submit
+            {hasCheckedInToday ? 'Already Checked In Today' : 'Submit'}
           </Box>
         </Box>
 
