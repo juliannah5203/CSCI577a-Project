@@ -1,4 +1,5 @@
 const Setting = require('../models/Setting');
+const User = require('../models/User');
 const dayjs = require('dayjs');
 
 const utc = require('dayjs/plugin/utc');
@@ -21,8 +22,15 @@ async function checkLastCheckin(userId) {
     // console.log("setting: : ", setting)
 
     // console.log("last: ", setting.last_checkin_day)
+
+    const user = await User.findOne({ _id: userId }); // 强制从主库读
   
-    const diff = dayjs().utc().diff(dayjs(lastCheckin).utc(), 'day');
+    const diff = dayjs().tz(user.time_zone).diff(dayjs(lastCheckin).tz(user.time_zone), 'day');
+
+    console.log("Today: ", dayjs().tz(user.time_zone), "Last: ", dayjs(lastCheckin).tz(user.time_zone))
+
+    console.log(diff)
+
     return diff >= 3;
   }
   catch (err) {
