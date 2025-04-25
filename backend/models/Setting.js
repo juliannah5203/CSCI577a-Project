@@ -8,7 +8,7 @@ const settingSchema = new mongoose.Schema({
   // checkin_alert_time_end: { type: Date, default:  new Date()}, 
   emergency_contact: { type: String }, // email or number
   // linked_account: { type: String },
-  last_checkin_day: {type: Date,  default: new Date()}
+  last_checkin_day: {type: Date,  default: new Date(-8640000000000000)}
 });
 
 module.exports = mongoose.model('Setting', settingSchema);
