@@ -1,6 +1,12 @@
 const Setting = require('../models/Setting');
 const dayjs = require('dayjs');
 
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 async function checkLastCheckin(userId) {
   try{
     console.log(userId);
@@ -12,11 +18,11 @@ async function checkLastCheckin(userId) {
     }
   
     const lastCheckin = setting.last_checkin_day;
-    console.log("setting: : ", setting)
+    // console.log("setting: : ", setting)
 
     // console.log("last: ", setting.last_checkin_day)
   
-    const diff = dayjs().diff(dayjs(lastCheckin), 'day');
+    const diff = dayjs().utc().diff(dayjs(lastCheckin).utc(), 'day');
     return diff >= 3;
   }
   catch (err) {
